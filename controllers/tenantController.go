@@ -11,10 +11,10 @@ import (
 func GetPods(c *fiber.Ctx) error {
 	// Get all pods in all namespaces
 	pods, err := util.Clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
-	util.InfoLogger.Println("/pods hit from IP: " + c.IP())
+	util.InfoLogger.Println("/api/v1/pods hit from IP: " + c.IP())
 	if err != nil {
 		util.WarningLogger.Println(err.Error())
 	}
-	// Return len of pods.items
-	return c.JSON(len(pods.Items))
+	// Return pods as JSON
+	return c.JSON(pods)
 }
