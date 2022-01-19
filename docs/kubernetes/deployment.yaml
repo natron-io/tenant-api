@@ -5,12 +5,12 @@ metadata:
 spec:
   selector:
     matchLabels:
-      run: tenant-api
+      app: tenant-api
   replicas: 1
   template:
     metadata:
       labels:
-        run: tenant-api
+        app: tenant-api
     spec:
       serviceAccount: tenant-api
       containers:
