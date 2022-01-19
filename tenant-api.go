@@ -19,7 +19,6 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/natron-io/tenant-api/routes"
 	"github.com/natron-io/tenant-api/util"
 
@@ -53,10 +52,6 @@ func init() {
 func main() {
 
 	app := fiber.New()
-
-	app.Use(cors.New(cors.Config{
-		AllowMethods: "GET",
-	}))
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Tenant API: https://github.com/natron-io/tenant-api")
