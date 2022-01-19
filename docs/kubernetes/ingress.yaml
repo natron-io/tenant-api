@@ -7,12 +7,11 @@ metadata:
   annotations:
     ingress.citrix.com/frontend-ip: 212.103.78.69
     ingress.citrix.com/insecure-termination: "redirect"
-    ingress.citrix.com/secure-backend: "True"
     kubernetes.io/ingress.class: "citrix"
-    cert-manager.io/cluster-issuer: letsencrypt-staging-natron
+    cert-manager.io/cluster-issuer: letsencrypt-natron
 spec:
   rules:
-  - host: tenant-api.natron.io
+  - host: api.natron.io
     http:
       paths:
       - path: /
@@ -21,8 +20,8 @@ spec:
           service:
             name: tenant-api
             port:
-              name: http
+              number: 8000
   tls:
   - hosts:
-    - tenant-api.natron.io
-    secretName: tenant-api-natron-io-cert
+    - api.natron.io
+    secretName: api-natron-io-cert
