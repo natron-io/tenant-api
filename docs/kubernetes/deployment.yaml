@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tenant-api
+spec:
+  selector:
+    matchLabels:
+      run: tenant-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: tenant-api
+    spec:
+      serviceAccount: tenant-api
+      containers:
+      - name: tenant-api
+        image: ghcr.io/natron-io/tenant-api:latest
+        ports:
+        - containerPort: 8000

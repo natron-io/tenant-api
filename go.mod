@@ -5,11 +5,14 @@ go 1.17
 require k8s.io/apimachinery v0.23.1
 
 require (
+	github.com/andybalholm/brotli v1.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/googleapis/gnostic v0.5.5 // indirect
-	github.com/imdario/mergo v0.3.5 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/klauspost/compress v1.13.4 // indirect
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	github.com/valyala/fasthttp v1.31.0 // indirect
+	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
 	golang.org/x/sys v0.0.0-20210831042530-f4d43177bf5e // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
@@ -24,6 +27,7 @@ require (
 
 require (
 	github.com/go-logr/logr v1.2.0 // indirect
+	github.com/gofiber/fiber/v2 v2.24.0
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/go-cmp v0.5.5 // indirect
 	github.com/google/gofuzz v1.1.0 // indirect
