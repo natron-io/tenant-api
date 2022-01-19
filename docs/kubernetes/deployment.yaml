@@ -15,6 +15,6 @@ spec:
       serviceAccount: tenant-api
       containers:
       - name: tenant-api
-        image: ghcr.io/natron-io/tenant-api:latest
+        image: tenant-api:local #ghcr.io/natron-io/tenant-api:latest
         ports:
         - containerPort: 8000
