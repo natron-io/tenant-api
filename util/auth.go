@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 )
 
 var (
 	CLIENT_ID     string
 	CLIENT_SECRET string
+	letters       = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 )
 
 func GetGithubAccessToken(code string) string {
@@ -21,6 +23,8 @@ func GetGithubAccessToken(code string) string {
 	if reqerr != nil {
 		ErrorLogger.Printf("Request creation failed: %s", reqerr)
 	}
+
+	InfoLogger.Printf("Request body: %s", requestJSON)
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
@@ -61,4 +65,31 @@ func GetGithubData(accessToken string) string {
 	respbody, _ := ioutil.ReadAll(resp.Body)
 
 	return string(respbody)
+}
+
+func GetGithubTeams(accessToken string) string {
+	req, reqerr := http.NewRequest("GET", "https://api.github.com/orgs/natron-io/teams", nil)
+	if reqerr != nil {
+		ErrorLogger.Printf("Request creation failed: %s", reqerr)
+	}
+
+	authorizationHeaderValue := fmt.Sprintf("token %s", accessToken)
+	req.Header.Set("Authorization", authorizationHeaderValue)
+
+	resp, respErr := http.DefaultClient.Do(req)
+	if respErr != nil {
+		ErrorLogger.Printf("Request failed: %s", respErr)
+	}
+
+	respbody, _ := ioutil.ReadAll(resp.Body)
+
+	return string(respbody)
+}
+
+func RandomStringBytes(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }

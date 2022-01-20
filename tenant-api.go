@@ -22,6 +22,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/natron-io/tenant-api/controllers"
 	"github.com/natron-io/tenant-api/routes"
 	"github.com/natron-io/tenant-api/util"
 
@@ -54,6 +55,19 @@ func init() {
 		util.WarningLogger.Println("CLIENT_SECRET is not set")
 	}
 
+	if controllers.SECRET_KEY = os.Getenv("SECRET_KEY"); controllers.SECRET_KEY == "" {
+		util.WarningLogger.Println("SECRET_KEY is not set")
+		// setting random key
+		controllers.SECRET_KEY = util.RandomStringBytes(32)
+		util.InfoLogger.Printf("SECRET_KEY is not set, using random key: %s", controllers.SECRET_KEY)
+	}
+
+	if controllers.LABELSELECTOR = os.Getenv("LABELSELECTOR"); controllers.LABELSELECTOR == "" {
+		util.WarningLogger.Println("LABELSELECTOR is not set")
+		controllers.LABELSELECTOR = "natron.io/tenant"
+		util.InfoLogger.Printf("LABELSELECTOR set using default: %s", controllers.LABELSELECTOR)
+	}
+
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -71,7 +85,8 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowMethods: "GET",
+		AllowMethods:     "GET",
+		AllowCredentials: true,
 	}))
 
 	app.Get("/", func(c *fiber.Ctx) error {
