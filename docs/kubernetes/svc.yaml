@@ -5,11 +5,11 @@ metadata:
   labels:
     app: tenant-api
 spec:
-  externalTrafficPolicy: Local
   type: NodePort
   ports:
   - name: http
     port: 8000
+    nodePort: 8000
     protocol: TCP
     targetPort: 8000
   selector:
