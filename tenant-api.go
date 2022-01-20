@@ -18,11 +18,14 @@ limitations under the License.
 package main
 
 import (
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/natron-io/tenant-api/routes"
 	"github.com/natron-io/tenant-api/util"
 
+	"github.com/joho/godotenv"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	//
@@ -38,6 +41,19 @@ import (
 
 func init() {
 	util.InitLoggers()
+
+	if err := godotenv.Load(); err != nil {
+		util.WarningLogger.Println("Error loading .env file")
+	}
+
+	if util.CLIENT_ID = os.Getenv("CLIENT_ID"); util.CLIENT_ID == "" {
+		util.WarningLogger.Println("CLIENT_ID is not set")
+	}
+
+	if util.CLIENT_SECRET = os.Getenv("CLIENT_SECRET"); util.CLIENT_SECRET == "" {
+		util.WarningLogger.Println("CLIENT_SECRET is not set")
+	}
+
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -59,7 +75,10 @@ func main() {
 	}))
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Tenant API: https://github.com/natron-io/tenant-api")
+		// set header to html
+		c.Set("Content-Type", "text/html")
+		// return html for login to github
+		return c.SendString("<a href='/login/github'>Login with Github</a>")
 	})
 
 	routes.Setup(app, util.Clientset)
