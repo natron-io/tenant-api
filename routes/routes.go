@@ -21,6 +21,7 @@ func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 	v1.Get("/pods", controllers.GetPods)
 	v1.Get("/namespaces", controllers.GetNamespaces)
 	v1.Get("/serviceAccounts", controllers.GetServiceAccounts)
-
-	v1.Get("/pods/:label", controllers.GetPodsByLabel)
+	v1.Get("/cpurequests", controllers.GetCPURequestsSum)
+	v1.Get("/memoryrequests", controllers.GetMemoryRequestsSum)
+	v1.Get("/storagerequests", controllers.GetStorageAllocationSum)
 }

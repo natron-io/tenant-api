@@ -8,79 +8,247 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+var (
+	LABELSELECTOR string
+)
+
 func GetPods(c *fiber.Ctx) error {
-	// Get all pods in the cluster
-	pods, err := util.Clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
 
-	// // Get all pods in all namespaces by label
-	// pods, err := util.Clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{LabelSelector: "app=tenant-api"})
+	tenants := CheckAuth(c)
+	if tenants == nil {
+		return c.Status(401).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
 
-	// // Get pvc by label
-	// pvc, err := util.Clientset.CoreV1().PersistentVolumeClaims("").List(context.TODO(), metav1.ListOptions{LabelSelector: "tenant=tenant-api"})
+	// create a map for each tenant with a list of pods with labels in it
+	tenantPods := make(map[string][]string)
+	for _, tenant := range tenants {
+		tenantNamespaces, err := util.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
+			LabelSelector: LABELSELECTOR + "=" + tenant,
+		})
 
-	// // Get cpu request by label
-	// cpuRequest, err := util.Clientset.CoreV1().ConfigMaps("").List(context.TODO(), metav1.ListOptions{LabelSelector: "tenant=tenant-api"})
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"message": "Internal Server Error",
+			})
+		}
 
+		// for each tenantNamespace get pods
+		for _, namespace := range tenantNamespaces.Items {
+			pods, err := util.Clientset.CoreV1().Pods(namespace.Name).List(context.TODO(), metav1.ListOptions{
+				LabelSelector: LABELSELECTOR + "=" + tenant,
+			})
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{
+					"message": "Internal Server Error",
+				})
+			}
+
+			// for each pod add it to the list of pods for the tenant
+			for _, pod := range pods.Items {
+				tenantPods[tenant] = append(tenantPods[tenant], pod.Name)
+			}
+		}
+	}
 	util.InfoLogger.Println("/api/v1/pods hit from IP: " + c.IP())
-	if err != nil {
-		util.WarningLogger.Println(err.Error())
-	}
-
-	// Get names of pods
-	podNames := make([]string, len(pods.Items))
-	for i, pod := range pods.Items {
-		podNames[i] = pod.Name
-	}
-
-	// Return pod names as JSON
-	return c.JSON(podNames)
-
-}
-
-func GetPodsByLabel(c *fiber.Ctx) error {
-	// Get pods in all the namespaces by label provided
-	pods, err := util.Clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{LabelSelector: c.Params("label")})
-
-	util.InfoLogger.Println("/api/v1/pods/label hit from IP: " + c.IP())
-	if err != nil {
-		util.WarningLogger.Println(err.Error())
-	}
-
-	// Only return pod name with label
-	podNames := make([]string, len(pods.Items))
-	for i, pod := range pods.Items {
-		podNames[i] = pod.Name
-	}
-
-	// Return pod names as JSON
-	return c.JSON(podNames)
+	return c.JSON(tenantPods)
 }
 
 func GetNamespaces(c *fiber.Ctx) error {
-	namespaces, err := util.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
 
+	tenants := CheckAuth(c)
+	if tenants == nil {
+		return c.Status(401).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
+
+	// create a map for each tenant with a list of namespaces with labels in it
+	tenantNamespaces := make(map[string][]string)
+	for _, tenant := range tenants {
+		namespaces, err := util.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
+			LabelSelector: LABELSELECTOR + "=" + tenant,
+		})
+
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"message": "Internal Server Error",
+			})
+		}
+
+		// for each tenantNamespace get pods
+		for _, namespace := range namespaces.Items {
+			tenantNamespaces[tenant] = append(tenantNamespaces[tenant], namespace.Name)
+		}
+	}
 	util.InfoLogger.Println("/api/v1/namespaces hit from IP: " + c.IP())
-	if err != nil {
-		util.WarningLogger.Println(err.Error())
-	}
-
-	// Get names of namespaces
-	namespaceNames := make([]string, len(namespaces.Items))
-	for i, namespace := range namespaces.Items {
-		namespaceNames[i] = namespace.Name
-	}
-
-	// Return namespace names as JSON
-	return c.JSON(namespaceNames)
+	return c.JSON(tenantNamespaces)
 }
 
 func GetServiceAccounts(c *fiber.Ctx) error {
-	serviceAccounts, err := util.Clientset.CoreV1().ServiceAccounts("").List(context.TODO(), metav1.ListOptions{})
+	tenants := CheckAuth(c)
+	if tenants == nil {
+		return c.Status(401).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
+	// create a map for each tenant with a map of namespaces with a list of service accounts with labels in it
+	tenantServiceAccounts := make(map[string]map[string][]string)
+	for _, tenant := range tenants {
+		namespaces, err := util.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
+			LabelSelector: LABELSELECTOR + "=" + tenant,
+		})
 
-	util.InfoLogger.Println("/api/v1/serviceAccounts hit from IP: " + c.IP())
-	if err != nil {
-		util.WarningLogger.Println(err.Error())
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"message": "Internal Server Error",
+			})
+		}
+
+		// for each tenantNamespace get service accounts
+		for _, namespace := range namespaces.Items {
+			serviceAccounts, err := util.Clientset.CoreV1().ServiceAccounts(namespace.Name).List(context.TODO(), metav1.ListOptions{})
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{
+					"message": "Internal Server Error",
+				})
+			}
+
+			// for each service account add it to the list of service accounts for the namespace
+			tenantServiceAccounts[tenant] = make(map[string][]string)
+			tenantServiceAccounts[tenant][namespace.Name] = make([]string, 0)
+			for _, serviceAccount := range serviceAccounts.Items {
+				tenantServiceAccounts[tenant][namespace.Name] = append(tenantServiceAccounts[tenant][namespace.Name], serviceAccount.Name)
+			}
+		}
+	}
+	util.InfoLogger.Println("/api/v1/serviceaccounts hit from IP: " + c.IP())
+	return c.JSON(tenantServiceAccounts)
+}
+
+func GetCPURequestsSum(c *fiber.Ctx) error {
+	tenants := CheckAuth(c)
+	if tenants == nil {
+		return c.Status(401).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
 	}
 
-	return c.JSON(serviceAccounts.Items)
+	// create a map for each tenant with a added cpu requests
+	tenantCPURequests := make(map[string]int64)
+	for _, tenant := range tenants {
+		namespaces, err := util.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
+			LabelSelector: LABELSELECTOR + "=" + tenant,
+		})
+
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"message": "Internal Server Error",
+			})
+		}
+
+		for _, namespace := range namespaces.Items {
+			pods, err := util.Clientset.CoreV1().Pods(namespace.Name).List(context.TODO(), metav1.ListOptions{
+				LabelSelector: LABELSELECTOR + "=" + tenant,
+			})
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{
+					"message": "Internal Server Error",
+				})
+			}
+
+			for _, pod := range pods.Items {
+				tenantCPURequests[tenant] += pod.Spec.Containers[0].Resources.Requests.Cpu().MilliValue()
+			}
+		}
+	}
+
+	util.InfoLogger.Println("/api/v1/cpurequests hit from IP: " + c.IP())
+	return c.JSON(tenantCPURequests)
+}
+
+func GetMemoryRequestsSum(c *fiber.Ctx) error {
+	tenants := CheckAuth(c)
+	if tenants == nil {
+		return c.Status(401).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
+
+	// create a map for each tenant with a added memory requests
+	tenantMemoryRequests := make(map[string]int64)
+	for _, tenant := range tenants {
+		namespaces, err := util.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
+			LabelSelector: LABELSELECTOR + "=" + tenant,
+		})
+
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"message": "Internal Server Error",
+			})
+		}
+
+		for _, namespace := range namespaces.Items {
+			pods, err := util.Clientset.CoreV1().Pods(namespace.Name).List(context.TODO(), metav1.ListOptions{
+				LabelSelector: LABELSELECTOR + "=" + tenant,
+			})
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{
+					"message": "Internal Server Error",
+				})
+			}
+
+			for _, pod := range pods.Items {
+				// byte to megabyte
+				tenantMemoryRequests[tenant] += pod.Spec.Containers[0].Resources.Requests.Memory().Value() / 1024 / 1024
+			}
+		}
+	}
+
+	util.InfoLogger.Println("/api/v1/memoryrequests hit from IP: " + c.IP())
+	return c.JSON(tenantMemoryRequests)
+}
+
+func GetStorageAllocationSum(c *fiber.Ctx) error {
+	tenants := CheckAuth(c)
+	if tenants == nil {
+		return c.Status(401).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
+
+	// create a map for each tenant with a map of storage classes with calculated pvcs in it
+	tenantPVCs := make(map[string]map[string]int64)
+	for _, tenant := range tenants {
+		namespaces, err := util.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
+			LabelSelector: LABELSELECTOR + "=" + tenant,
+		})
+
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"message": "Internal Server Error",
+			})
+		}
+
+		for _, namespace := range namespaces.Items {
+			pvcList, err := util.Clientset.CoreV1().PersistentVolumeClaims(namespace.Name).List(context.TODO(), metav1.ListOptions{})
+
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{
+					"message": "Internal Server Error",
+				})
+			}
+
+			// create a map for each storage class with a count of pvc size
+			tenantPVCs[tenant] = make(map[string]int64)
+			for _, pvc := range pvcList.Items {
+				tenantPVCs[tenant][*pvc.Spec.StorageClassName] += pvc.Spec.Resources.Requests.Storage().Value()
+			}
+		}
+	}
+
+	util.InfoLogger.Println("/api/v1/pvcs hit from IP: " + c.IP())
+	return c.JSON(tenantPVCs)
+
 }
