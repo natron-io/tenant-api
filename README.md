@@ -1,3 +1,4 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/natron-io/tenant-api/badge)](https://www.codefactor.io/repository/github/natron-io/tenant-api)
 # tenant-api
 API to present data to the tenant-dashboard with a GitHub oauth login.
 Tenants represents the teams of a GitHub organization.
