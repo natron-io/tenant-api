@@ -243,7 +243,8 @@ func GetStorageAllocationSum(c *fiber.Ctx) error {
 			// create a map for each storage class with a count of pvc size
 			tenantPVCs[tenant] = make(map[string]int64)
 			for _, pvc := range pvcList.Items {
-				tenantPVCs[tenant][*pvc.Spec.StorageClassName] += pvc.Spec.Resources.Requests.Storage().Value()
+				// bytes to gigabytes
+				tenantPVCs[tenant][*pvc.Spec.StorageClassName] += pvc.Spec.Resources.Requests.Storage().Value() / 1024 / 1024 / 1024
 			}
 		}
 	}
