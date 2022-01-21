@@ -16,7 +16,8 @@ Tenants represents the teams of a GitHub organization.
 `CLIENT_ID` - GitHub client id **required** \
 `CLIENT_SECRET` - GitHub client secret **required** \
 `SECRET_KEY` - JWT secret key *optional* (default: random 32 bytes, displayed in the logs) \
-`LABELSELECTOR` - label key for selecting tenant ressources *optional* (default: "natron.io/tenant")
+`LABELSELECTOR` - label key for selecting tenant ressources *optional* (default: "natron.io/tenant") \
+`CALLBACK_URL` - GitHub oauth callback url without path *optional* (default: "http://localhost:3000")
 
 ## local testing
 

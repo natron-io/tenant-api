@@ -11,10 +11,11 @@ import (
 )
 
 var SECRET_KEY string
+var CALLBACK_URL string
 
 func GithubLogin(c *fiber.Ctx) error {
 	redirectURL := fmt.Sprintf("https://github.com/login/oauth/authorize?scope=read:org&client_id=%s&redirect_uri=%s",
-		util.CLIENT_ID, "http://127.0.0.1:56668/login/github/callback") //api.natron.io
+		util.CLIENT_ID, CALLBACK_URL+"/login/github/callback")
 
 	return c.Redirect(redirectURL)
 }

@@ -68,6 +68,12 @@ func init() {
 		util.InfoLogger.Printf("LABELSELECTOR set using default: %s", controllers.LABELSELECTOR)
 	}
 
+	if controllers.CALLBACK_URL = os.Getenv("CALLBACK_URL"); controllers.CALLBACK_URL == "" {
+		util.WarningLogger.Println("CALLBACK_URL is not set")
+		controllers.CALLBACK_URL = "http://localhost:3000"
+		util.InfoLogger.Printf("CALLBACK_URL set using default: %s", controllers.CALLBACK_URL)
+	}
+
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()
 	if err != nil {
