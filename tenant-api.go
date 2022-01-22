@@ -19,6 +19,8 @@ package main
 
 import (
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -39,6 +41,8 @@ import (
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/openstack"
 )
+
+var err error
 
 func init() {
 	util.InitLoggers()
@@ -62,16 +66,64 @@ func init() {
 		util.InfoLogger.Printf("SECRET_KEY is not set, using random key: %s", controllers.SECRET_KEY)
 	}
 
-	if controllers.LABELSELECTOR = os.Getenv("LABELSELECTOR"); controllers.LABELSELECTOR == "" {
+	if util.LABELSELECTOR = os.Getenv("LABELSELECTOR"); util.LABELSELECTOR == "" {
 		util.WarningLogger.Println("LABELSELECTOR is not set")
-		controllers.LABELSELECTOR = "natron.io/tenant"
-		util.InfoLogger.Printf("LABELSELECTOR set using default: %s", controllers.LABELSELECTOR)
+		util.LABELSELECTOR = "natron.io/tenant"
+		util.InfoLogger.Printf("LABELSELECTOR set using default: %s", util.LABELSELECTOR)
 	}
 
 	if controllers.CALLBACK_URL = os.Getenv("CALLBACK_URL"); controllers.CALLBACK_URL == "" {
 		util.WarningLogger.Println("CALLBACK_URL is not set")
 		controllers.CALLBACK_URL = "http://localhost:3000"
 		util.InfoLogger.Printf("CALLBACK_URL set using default: %s", controllers.CALLBACK_URL)
+	}
+
+	if util.CPU_COST, err = strconv.ParseFloat(os.Getenv("CPU_COST"), 64); util.CPU_COST == 0 || err != nil {
+		util.WarningLogger.Println("CPU_COST is not set or invalid float value")
+		util.CPU_COST = 1.00
+		util.InfoLogger.Printf("CPU_COST set using default: %f", util.CPU_COST)
+	}
+
+	if util.MEMORY_COST, err = strconv.ParseFloat(os.Getenv("MEMORY_COST"), 64); util.MEMORY_COST == 0 || err != nil {
+		util.WarningLogger.Println("MEMORY_COST is not set or invalid float value")
+		util.MEMORY_COST = 1.00
+		util.InfoLogger.Printf("MEMORY_COST set using default: %f", util.MEMORY_COST)
+	}
+
+	// get every env variable starting with STORAGE_COST_ and parse it to util.STORAGE_COST with the storage class name after STORAGE_COST_ as key
+	i := 0
+	for _, env := range os.Environ() {
+		if strings.HasPrefix(env, "STORAGE_COST_") {
+			// split env variable to key and value
+			keyValue := strings.Split(env, "=")
+			// split key to storage class name and cost
+			storageClassCost := strings.Split(keyValue[0], "_")
+			// get cost
+			cost, err := strconv.ParseFloat(keyValue[1], 64)
+			if err != nil {
+				util.WarningLogger.Printf("Invalid float value for %s", keyValue[0])
+				continue
+			}
+			// add storage class name and cost to util.STORAGE_COST struct
+			util.STORAGE_COST[i] = util.StorageClassCost{
+				StorageClass: storageClassCost[2],
+				Cost:         cost,
+			}
+			i++
+			util.InfoLogger.Printf("Added storage class %s with cost %f", storageClassCost[1], cost)
+		}
+	}
+
+	if util.STORAGE_COST == nil {
+		util.WarningLogger.Println("No storage class cost set")
+		util.InfoLogger.Println("No storage class cost set")
+
+		// add default storage class cost
+		util.STORAGE_COST = append(util.STORAGE_COST, util.StorageClassCost{
+			StorageClass: "default",
+			Cost:         1.00,
+		})
+		util.InfoLogger.Printf("Added default storage class cost with cost %f", util.STORAGE_COST[0].Cost)
 	}
 
 	// creates the in-cluster config
