@@ -16,25 +16,25 @@ Tenants represents the teams of a GitHub organization.
 `/api/v1/serviceaccounts` - Get serviceaccounts of a tenant by namespaces \
 `/api/v1/requests/cpu` - Get cpurequests in **Milicores** of a tenant \
 `/api/v1/requests/memory` - Get memoryrequests in **Bytes** of a tenant \
-`/api/v1/requests/storage` - Get storagerequests in **Bytes** of a tenant by storageclass \
+`/api/v1/requests/storage` - Get storagerequests in **Bytes** of a tenant by storageclass
 
 ### tenant ressource costs
 `/api/v1/costs/cpu` - Get the cpu costs by CPU \
 `/api/v1/costs/memory` - Get the memory costs by Memory \
-`/api/v1/costs/storage` - Get the storage costs by StorageClass \
+`/api/v1/costs/storage` - Get the storage costs by StorageClass
 
 ## env
 
 ### GitHub
 `CLIENT_ID` - GitHub client id **required** \
 `CLIENT_SECRET` - GitHub client secret **required** \
-`CALLBACK_URL` - GitHub oauth callback url without path *optional* (default: "http://localhost:3000") \
+`CALLBACK_URL` - GitHub oauth callback url without path *optional* (default: "http://localhost:3000")
 
 ### auth
-`SECRET_KEY` - JWT secret key *optional* (default: random 32 bytes, displayed in the logs) \
+`SECRET_KEY` - JWT secret key *optional* (default: random 32 bytes, displayed in the logs)
 
 ### tenant ressource identifiers
-`LABELSELECTOR` - label key for selecting tenant ressources *optional* (default: "natron.io/tenant") \
+`LABELSELECTOR` - label key for selecting tenant ressources *optional* (default: "natron.io/tenant")
 
 ### cost calculation values
 `CPU_COST` - Cost of a cpu in your currency *optional* (default: 1.00 for 1 CPU) \
