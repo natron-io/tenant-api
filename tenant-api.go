@@ -65,9 +65,17 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	// get kubernetes cluster name
+	clusterName, err := util.Clientset.Discovery().ServerResourcesForGroupVersion("v1")
+	if err != nil {
+		util.ErrorLogger.Printf("Error getting cluster name: %v", err)
+		os.Exit(1)
+	}
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Render("index", fiber.Map{
 			"title":  "Tenant API",
+			"clustername": clusterName,
 			"status": util.GetStatus(),
 		})
 	})

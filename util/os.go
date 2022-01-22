@@ -94,5 +94,5 @@ func GetStatus() string {
 	if err != nil {
 		return "error"
 	}
-	return "ok"
+	return "connected"
 }
