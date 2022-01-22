@@ -17,22 +17,16 @@ limitations under the License.
 package main
 
 import (
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/template/html"
 	"github.com/natron-io/tenant-api/routes"
 	"github.com/natron-io/tenant-api/util"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	//
-	// Uncomment to load all auth plugins
-	// _ "k8s.io/client-go/plugin/pkg/client/auth"
-	//
-	// Or uncomment to load specific auth plugins
-	// _ "k8s.io/client-go/plugin/pkg/client/auth/azure"
-	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
-	// _ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
-	// _ "k8s.io/client-go/plugin/pkg/client/auth/openstack"
 )
 
 func init() {
@@ -41,23 +35,30 @@ func init() {
 	// load util config envs
 	if err := util.LoadEnv(); err != nil {
 		util.ErrorLogger.Println("Error loading .env file")
+		os.Exit(1)
 	}
 
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		panic(err.Error())
+		util.ErrorLogger.Printf("Error creating in-cluster config: %v", err)
+		os.Exit(1)
 	}
 	// creates the clientset
 	util.Clientset, err = kubernetes.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		util.ErrorLogger.Printf("Error creating clientset: %v", err)
+		os.Exit(1)
 	}
 }
 
 func main() {
 
-	app := fiber.New()
+	engine := html.New("./public", ".html")
+
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
 
 	app.Use(cors.New(cors.Config{
 		AllowMethods:     "GET",
@@ -65,41 +66,15 @@ func main() {
 	}))
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		// set header to html
-		c.Set("Content-Type", "text/html")
-		// return html for login to github
-		return c.SendString("<a href='/login/github'>Login with Github</a>")
+		return c.Render("index", fiber.Map{
+			"title":  "Tenant API",
+			"status": util.GetStatus(),
+		})
 	})
 
 	routes.Setup(app, util.Clientset)
 
-	app.Listen(":8000")
-
 	util.InfoLogger.Println("Tenant API is running on port 8000")
 
-	// for {
-	// 	// get pods in all the namespaces by omitting namespace
-	// 	// Or specify namespace to get pods in particular namespace
-	// 	pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
-	// 	if err != nil {
-	// 		panic(err.Error())
-	// 	}
-	// 	fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
-
-	// 	// Examples for error handling:
-	// 	// - Use helper functions e.g. errors.IsNotFound()
-	// 	// - And/or cast to StatusError and use its properties like e.g. ErrStatus.Message
-	// 	_, err = clientset.CoreV1().Pods("default").Get(context.TODO(), "example-xxxxx", metav1.GetOptions{})
-	// 	if errors.IsNotFound(err) {
-	// 		fmt.Printf("Pod example-xxxxx not found in default namespace\n")
-	// 	} else if statusError, isStatus := err.(*errors.StatusError); isStatus {
-	// 		fmt.Printf("Error getting pod %v\n", statusError.ErrStatus.Message)
-	// 	} else if err != nil {
-	// 		panic(err.Error())
-	// 	} else {
-	// 		fmt.Printf("Found example-xxxxx pod in default namespace\n")
-	// 	}
-
-	// 	time.Sleep(10 * time.Second)
-	// }
+	app.Listen(":8000")
 }

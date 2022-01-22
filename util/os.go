@@ -1,11 +1,10 @@
 package util
 
 import (
+	"errors"
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/joho/godotenv"
 )
 
 var (
@@ -13,16 +12,16 @@ var (
 )
 
 func LoadEnv() error {
-	if err := godotenv.Load(); err != nil {
-		WarningLogger.Println("Error loading .env file")
-	}
-
 	if CLIENT_ID = os.Getenv("CLIENT_ID"); CLIENT_ID == "" {
-		WarningLogger.Println("CLIENT_ID is not set")
+		err = errors.New("CLIENT_ID is not set")
+		ErrorLogger.Println(err)
+		return err
 	}
 
 	if CLIENT_SECRET = os.Getenv("CLIENT_SECRET"); CLIENT_SECRET == "" {
-		WarningLogger.Println("CLIENT_SECRET is not set")
+		err = errors.New("CLIENT_SECRET is not set")
+		ErrorLogger.Println(err)
+		return err
 	}
 
 	if CALLBACK_URL = os.Getenv("CALLBACK_URL"); CALLBACK_URL == "" {
@@ -68,7 +67,7 @@ func LoadEnv() error {
 			cost, err := strconv.ParseFloat(keyValue[1], 64)
 			if err != nil {
 				WarningLogger.Printf("Invalid float value for %s", keyValue[0])
-				continue
+				return err
 			}
 			// add storage class name and cost
 			tempStorageCost[storageClassCost[1]] = cost
@@ -80,7 +79,6 @@ func LoadEnv() error {
 	STORAGE_COST = tempStorageCost
 
 	if STORAGE_COST == nil {
-		WarningLogger.Println("No storage class cost set")
 		InfoLogger.Println("No storage class cost set")
 
 		// add default storage class cost
@@ -90,4 +88,11 @@ func LoadEnv() error {
 	}
 
 	return nil
+}
+
+func GetStatus() string {
+	if err != nil {
+		return "error"
+	}
+	return "ok"
 }
