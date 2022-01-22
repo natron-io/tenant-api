@@ -11,4 +11,4 @@ WORKDIR /root/
 COPY --from=0 /go/src/github.com/natron-io/tenant-api/tenant-api ./
 COPY --from=0 /go/src/github.com/natron-io/tenant-api/public ./
 EXPOSE 8000
-CMD ["./app"]
+CMD ["./tenant-api"]
