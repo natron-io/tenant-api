@@ -10,12 +10,9 @@ import (
 	"github.com/natron-io/tenant-api/util"
 )
 
-var SECRET_KEY string
-var CALLBACK_URL string
-
 func GithubLogin(c *fiber.Ctx) error {
 	redirectURL := fmt.Sprintf("https://github.com/login/oauth/authorize?scope=read:org&client_id=%s&redirect_uri=%s",
-		util.CLIENT_ID, CALLBACK_URL+"/login/github/callback")
+		util.CLIENT_ID, util.CALLBACK_URL+"/login/github/callback")
 
 	return c.Redirect(redirectURL)
 }
@@ -60,7 +57,7 @@ func LoggedIn(c *fiber.Ctx, githubData string) error {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, _ := token.SignedString([]byte(SECRET_KEY))
+	tokenString, _ := token.SignedString([]byte(util.SECRET_KEY))
 
 	cookie := &fiber.Cookie{
 		Name:    "tenant-api-token",
@@ -91,7 +88,7 @@ func CheckAuth(c *fiber.Ctx) []string {
 		if !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(SECRET_KEY), nil
+		return []byte(util.SECRET_KEY), nil
 	})
 
 	claims := token.Claims.(jwt.MapClaims)

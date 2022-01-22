@@ -13,6 +13,8 @@ var (
 	CLIENT_ID     string
 	CLIENT_SECRET string
 	letters       = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	SECRET_KEY    string
+	CALLBACK_URL  string
 )
 
 func GetGithubAccessToken(code string) string {
