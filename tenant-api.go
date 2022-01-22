@@ -91,7 +91,7 @@ func init() {
 	}
 
 	// get every env variable starting with STORAGE_COST_ and parse it to util.STORAGE_COST with the storage class name after STORAGE_COST_ as key
-	i := 0
+	tempStorageCost := make(map[string]float64)
 	for _, env := range os.Environ() {
 		if strings.HasPrefix(env, "STORAGE_COST_") {
 			// split env variable to key and value
@@ -104,26 +104,23 @@ func init() {
 				util.WarningLogger.Printf("Invalid float value for %s", keyValue[0])
 				continue
 			}
-			// add storage class name and cost to util.STORAGE_COST struct
-			util.STORAGE_COST[i] = util.StorageClassCost{
-				StorageClass: storageClassCost[2],
-				Cost:         cost,
-			}
-			i++
-			util.InfoLogger.Printf("Added storage class %s with cost %f", storageClassCost[1], cost)
+			// add storage class name and cost
+			tempStorageCost[storageClassCost[1]] = cost
+
+			util.InfoLogger.Printf("Added storage class %s with cost %f", storageClassCost[2], cost)
 		}
 	}
+	// set util.STORAGE_COST
+	util.STORAGE_COST = tempStorageCost
 
 	if util.STORAGE_COST == nil {
 		util.WarningLogger.Println("No storage class cost set")
 		util.InfoLogger.Println("No storage class cost set")
 
 		// add default storage class cost
-		util.STORAGE_COST = append(util.STORAGE_COST, util.StorageClassCost{
-			StorageClass: "default",
-			Cost:         1.00,
-		})
-		util.InfoLogger.Printf("Added default storage class cost with cost %f", util.STORAGE_COST[0].Cost)
+		util.STORAGE_COST = make(map[string]float64)
+		util.STORAGE_COST["default"] = 1.00
+		util.InfoLogger.Printf("Added default storage class with cost %f", util.STORAGE_COST["default"])
 	}
 
 	// creates the in-cluster config

@@ -3,13 +3,8 @@ package util
 var (
 	CPU_COST     float64
 	MEMORY_COST  float64
-	STORAGE_COST []StorageClassCost
+	STORAGE_COST map[string]float64
 )
-
-type StorageClassCost struct {
-	StorageClass string
-	Cost         float64
-}
 
 func GetCPUCost(millicores float64) float64 {
 	// return per core
@@ -22,12 +17,6 @@ func GetMemoryCost(memory float64) float64 {
 }
 
 func GetStorageCost(storageClass string, size float64) float64 {
-	for _, storageClassCost := range STORAGE_COST {
-		if storageClassCost.StorageClass == storageClass {
-			// return per GB
-			return storageClassCost.Cost * float64(size) / (1024 * 1024 * 1024)
-		}
-	}
 	// return per GB
-	return STORAGE_COST[0].Cost * float64(size) / (1024 * 1024 * 1024)
+	return STORAGE_COST[storageClass] * float64(size) / (1024 * 1024 * 1024)
 }
