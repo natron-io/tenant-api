@@ -103,3 +103,18 @@ func CheckAuth(c *fiber.Ctx) []string {
 
 	return githubTeamSlugs
 }
+
+func Logout(c *fiber.Ctx) error {
+	cookie := &fiber.Cookie{
+		Name:     "tenant-api-token",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+	}
+
+	c.Cookie(cookie)
+
+	return c.JSON(fiber.Map{
+		"message": "Logged out",
+	})
+}

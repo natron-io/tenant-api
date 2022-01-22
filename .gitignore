@@ -1,2 +1,7 @@
 .env
-*.yaml
+docs/kubernetes/dpl.yaml
+docs/kubernetes/odpl.yaml
+docs/kubernetes/pod.yaml
+docs/kubernetes/pvc.yaml
+docs/kubernetes/oingress.yaml
+docs/kubernetes/ns.yaml

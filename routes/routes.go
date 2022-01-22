@@ -10,9 +10,7 @@ func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 	// Auth
 	app.Get("/login/github", controllers.GithubLogin)
 	app.Get("/login/github/callback", controllers.GithubCallback)
-	app.Get("/loggedin", func(c *fiber.Ctx) error {
-		return controllers.LoggedIn(c, c.Get("githubData"))
-	})
+	app.Get("/logout", controllers.Logout)
 
 	// API
 	api := app.Group("/api")
