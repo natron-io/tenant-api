@@ -1,0 +1,40 @@
+body {
+    background-color: #5864FF !important;
+    font-family: Arial, Helvetica, sans-serif;
+
+}
+
+.card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 2px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+    /* center the card */
+
+    width: 50%;
+    margin: 20px auto;
+
+    /* center font */
+    text-align: center;
+}
+
+#logo {
+    width: 150px;
+}   
+
+#logo_container {
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 150px;
+    margin: auto;
+    margin-top: 10%;
+    text-align: center;
+    color: #fff;
+}
+
+#github-button {
+    margin: auto;
+    width: 50%;
+    color: #fff;
+    padding: 10px;
+}

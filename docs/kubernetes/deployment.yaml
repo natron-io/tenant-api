@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tenant-api
+spec:
+  selector:
+    matchLabels:
+      app: tenant-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tenant-api
+    spec:
+      serviceAccount: tenant-api
+      containers:
+      - name: tenant-api
+        image: ghcr.io/natron-io/tenant-api:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: CLIENT_ID
+          value: <client_id> # of your github application
+        - name: CLIENT_SECRET
+          value: <client_secret> # of your github application
+        - name: CALLBACK_URL
+          value: http://example.com
+        ## optional
+        # - name: CPU_COST # for the storageclass 'TEST'
+        #   value: "10" # 10.- per 1 CPU Core
+        # - name: MEMORY_COST # for the storageclass 'TEST'
+        #   value: "15" # 15.- per 1 GB
+        # - name: STORAGE_COST_TEST # for the storageclass 'TEST'
+        #   value: "2" # 20.- per 1 GB

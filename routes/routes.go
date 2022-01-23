@@ -10,9 +10,7 @@ func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 	// Auth
 	app.Get("/login/github", controllers.GithubLogin)
 	app.Get("/login/github/callback", controllers.GithubCallback)
-	app.Get("/loggedin", func(c *fiber.Ctx) error {
-		return controllers.LoggedIn(c, c.Get("githubData"))
-	})
+	app.Get("/logout", controllers.Logout)
 
 	// API
 	api := app.Group("/api")
@@ -21,7 +19,14 @@ func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 	v1.Get("/pods", controllers.GetPods)
 	v1.Get("/namespaces", controllers.GetNamespaces)
 	v1.Get("/serviceAccounts", controllers.GetServiceAccounts)
-	v1.Get("/cpurequests", controllers.GetCPURequestsSum)
-	v1.Get("/memoryrequests", controllers.GetMemoryRequestsSum)
-	v1.Get("/storagerequests", controllers.GetStorageAllocationSum)
+
+	requests := v1.Group("/requests")
+	requests.Get("/cpu", controllers.GetCPURequestsSum)
+	requests.Get("/memory", controllers.GetMemoryRequestsSum)
+	requests.Get("/storage", controllers.GetStorageRequestsSum)
+
+	costs := v1.Group("/costs")
+	costs.Get("/cpu", controllers.GetCPUCostSum)
+	costs.Get("/memory", controllers.GetMemoryCostSum)
+	costs.Get("/storage", controllers.GetStorageCostSum)
 }
