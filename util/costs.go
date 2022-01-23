@@ -22,6 +22,10 @@ func GetMemoryCost(memory float64) float64 {
 
 func GetStorageCost(storageClass string, size float64) (float64, error) {
 	InfoLogger.Printf("GetStorageCost: %s %f", storageClass, size)
+	// print STORAGE_COST
+	for key, value := range STORAGE_COST {
+		fmt.Printf("%s: %f\n", key, value)
+	}
 	// return per GB
 	if cost, ok := STORAGE_COST[storageClass]; ok {
 		return cost * float64(size) / (1024 * 1024 * 1024), nil
