@@ -1,5 +1,9 @@
 package util
 
+import (
+	"fmt"
+)
+
 var (
 	CPU_COST     float64
 	MEMORY_COST  float64
