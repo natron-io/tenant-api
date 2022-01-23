@@ -58,35 +58,34 @@ func LoadEnv() error {
 	}
 
 	// get every env variable starting with STORAGE_COST_ and parse it to STORAGE_COST with the storage class name after STORAGE_COST_ as key
-	tempStorageCost := make(map[string]float64)
+	tempStorageCost := make(map[string]map[string]float64)
 	for _, env := range os.Environ() {
 		if strings.HasPrefix(env, "STORAGE_COST_") {
 			// split env variable to key and value
 			keyValue := strings.Split(env, "=")
 			// split key to storage class name and cost
-			storageClassCost := strings.Split(keyValue[0], "_")
-			// get cost
-			cost, err := strconv.ParseFloat(keyValue[1], 64)
+			key := strings.Split(keyValue[0], "_")
+			// parse value to float
+			value, err := strconv.ParseFloat(keyValue[1], 64)
 			if err != nil {
-				WarningLogger.Printf("Invalid float value for %s", keyValue[0])
+				err = errors.New("STORAGE_COST_" + key[2] + " is not set or invalid float value")
+				ErrorLogger.Println(err)
+				Status = "Error"
 				return err
 			}
-			// add storage class name and cost
-			tempStorageCost[storageClassCost[1]] = cost
-
-			InfoLogger.Printf("Added storage class %s with cost %f", storageClassCost[2], cost)
+			// add to tempStorageCost
+			tempStorageCost[key[2]] = map[string]float64{"cost": value}
+			InfoLogger.Printf("storage class %s set to cost value: %f", key[2], value)
 		}
 	}
-	// set STORAGE_COST
 	STORAGE_COST = tempStorageCost
 
 	if STORAGE_COST == nil {
-		InfoLogger.Println("No storage class cost set")
-
-		// add default storage class cost
-		STORAGE_COST = make(map[string]float64)
-		STORAGE_COST["default"] = 1.00
-		InfoLogger.Printf("Added default storage class with cost %f", STORAGE_COST["default"])
+		WarningLogger.Println("STORAGE_COST is not set")
+		STORAGE_COST = map[string]map[string]float64{
+			"default": {"cost": 1.00},
+		}
+		InfoLogger.Printf("cost for storage class default set using default: %f", STORAGE_COST["default"]["cost"])
 	}
 
 	return nil
