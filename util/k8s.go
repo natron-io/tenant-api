@@ -172,10 +172,15 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 				return nil, err
 			}
 
-			// create a map for each storage class with a count of pvc size
+			// create a map for each storage class with a count of pvc size if it exists
 			tenantPVCs[tenant] = make(map[string]int64)
 			for _, pvc := range pvcList.Items {
 				tenantPVCs[tenant][*pvc.Spec.StorageClassName] += pvc.Spec.Resources.Requests.Storage().Value()
+			}
+
+			// if tenant is emtpy remove it from the map
+			if len(tenantPVCs[tenant]) == 0 {
+				delete(tenantPVCs, tenant)
 			}
 		}
 	}

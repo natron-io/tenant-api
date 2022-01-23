@@ -106,5 +106,12 @@ func GetStorageCostSum(c *fiber.Ctx) error {
 		}
 	}
 
+	// remove tenants with no storage costs
+	for tenant, storageCosts := range tenantStorageCosts {
+		if len(storageCosts) == 0 {
+			delete(tenantStorageCosts, tenant)
+		}
+	}
+
 	return c.JSON(tenantStorageCosts)
 }
