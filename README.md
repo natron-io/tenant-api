@@ -1,6 +1,13 @@
-[![CodeFactor](https://www.codefactor.io/repository/github/natron-io/tenant-api/badge)](https://www.codefactor.io/repository/github/natron-io/tenant-api)
 # tenant-api
-API to present data to the tenant-dashboard with a GitHub oauth login.
+[![CodeFactor](https://www.codefactor.io/repository/github/natron-io/tenant-api/badge)](https://www.codefactor.io/repository/github/natron-io/tenant-api)
+![Build Status](https://github.com/natron-io/tenant-api/workflows/CI/badge.svg) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/natron-io/tenant-api)](https://goreportcard.com/report/github.com/natron-io/tenant-api) 
+![GitHub top language](https://img.shields.io/github/languages/top/natron-io/tenant-api)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/natron-io/tenant-api) 
+![open issues](https://img.shields.io/github/issues-raw/natron-io/tenant-api)
+![license](https://img.shields.io/github/license/natron-io/tenant-api)
+
+API to present data to the [tenant-dashboard](https://github.com/natron-io/tenant-dashboard) with a GitHub oauth login.
 Tenants represents the teams of a GitHub organization.
 
 ## api
@@ -41,7 +48,7 @@ Tenants represents the teams of a GitHub organization.
 `MEMORY_COST` - Cost of a memory in your currency *optional* (default: 1.00 for 1 GB) \
 `STORAGE_COST_<storageclass name>` - Cost of your storage classes in your currency *optional, multiple allowed* (default: 1.00 for 1 GB)
 
-## local testing
+## deployment
 *example deployment files:* [kubernetes manifests](docs/kubernetes)
 
 1. run a local minikube and apply a service account with clusterwide `view` permissions
