@@ -52,6 +52,13 @@ func LoggedIn(c *fiber.Ctx, githubData string) error {
 		githubTeamSlugs = append(githubTeamSlugs, githubTeam["slug"].(string))
 	}
 
+	if githubTeamSlugs == nil {
+		// return unauthorized
+		return c.Status(401).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
+
 	claims := jwt.MapClaims{
 		"github_team_slugs": githubTeamSlugs,
 	}
@@ -92,6 +99,11 @@ func CheckAuth(c *fiber.Ctx) []string {
 	})
 
 	claims := token.Claims.(jwt.MapClaims)
+
+	if claims["github_team_slugs"] == nil {
+		util.WarningLogger.Printf("IP %s is not authorized", c.IP())
+		return nil
+	}
 
 	var githubTeamSlugs []string
 	for _, githubTeam := range claims["github_team_slugs"].([]interface{}) {
