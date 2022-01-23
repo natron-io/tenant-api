@@ -20,6 +20,7 @@ func GetPodsByTenant(tenants []string) (map[string][]string, error) {
 		})
 
 		if err != nil {
+			Status = "Error"
 			return nil, err
 		}
 
@@ -29,6 +30,7 @@ func GetPodsByTenant(tenants []string) (map[string][]string, error) {
 				LabelSelector: LABELSELECTOR + "=" + tenant,
 			})
 			if err != nil {
+				Status = "Error"
 				return nil, err
 			}
 
@@ -49,6 +51,7 @@ func GetNamespacesByTenant(tenants []string) (map[string][]string, error) {
 		})
 
 		if err != nil {
+			Status = "Error"
 			return nil, err
 		}
 
@@ -68,6 +71,7 @@ func GetServiceAccountsByTenant(tenants []string) (map[string]map[string][]strin
 		})
 
 		if err != nil {
+			Status = "Error"
 			return nil, err
 		}
 
@@ -75,6 +79,7 @@ func GetServiceAccountsByTenant(tenants []string) (map[string]map[string][]strin
 		for _, namespace := range namespaces.Items {
 			serviceAccounts, err := Clientset.CoreV1().ServiceAccounts(namespace.Name).List(context.TODO(), metav1.ListOptions{})
 			if err != nil {
+				Status = "Error"
 				return nil, err
 			}
 
@@ -97,6 +102,7 @@ func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 		})
 
 		if err != nil {
+			Status = "Error"
 			return nil, err
 		}
 
@@ -105,6 +111,7 @@ func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 				LabelSelector: LABELSELECTOR + "=" + tenant,
 			})
 			if err != nil {
+				Status = "Error"
 				return nil, err
 			}
 
@@ -124,6 +131,7 @@ func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 		})
 
 		if err != nil {
+			Status = "Error"
 			return nil, err
 		}
 
@@ -132,6 +140,7 @@ func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 				LabelSelector: LABELSELECTOR + "=" + tenant,
 			})
 			if err != nil {
+				Status = "Error"
 				return nil, err
 			}
 
@@ -151,6 +160,7 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 		})
 
 		if err != nil {
+			Status = "Error"
 			return nil, err
 		}
 
@@ -158,6 +168,7 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 			pvcList, err := Clientset.CoreV1().PersistentVolumeClaims(namespace.Name).List(context.TODO(), metav1.ListOptions{})
 
 			if err != nil {
+				Status = "Error"
 				return nil, err
 			}
 

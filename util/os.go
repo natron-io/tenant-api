@@ -15,12 +15,14 @@ func LoadEnv() error {
 	if CLIENT_ID = os.Getenv("CLIENT_ID"); CLIENT_ID == "" {
 		err = errors.New("CLIENT_ID is not set")
 		ErrorLogger.Println(err)
+		Status = "Error"
 		return err
 	}
 
 	if CLIENT_SECRET = os.Getenv("CLIENT_SECRET"); CLIENT_SECRET == "" {
 		err = errors.New("CLIENT_SECRET is not set")
 		ErrorLogger.Println(err)
+		Status = "Error"
 		return err
 	}
 
@@ -88,11 +90,4 @@ func LoadEnv() error {
 	}
 
 	return nil
-}
-
-func GetStatus() string {
-	if err != nil {
-		return "error"
-	}
-	return "connected"
 }

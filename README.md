@@ -6,8 +6,8 @@ Tenants represents the teams of a GitHub organization.
 ## api
 
 ### auth
-`/github/login` - Login with GitHub \
-`/github/login/callback` - Callback after GitHub login \
+`/login/github` - Login with GitHub \
+`/login/github/callback` - Callback after GitHub login \
 `/logout` - Logout
 
 ### tenant ressource requests

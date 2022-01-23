@@ -31,10 +31,11 @@ import (
 
 func init() {
 	util.InitLoggers()
+	util.Status = "Running"
 
 	// load util config envs
 	if err := util.LoadEnv(); err != nil {
-		util.ErrorLogger.Println("Error loading .env file")
+		util.ErrorLogger.Println("Error loading env variables")
 		os.Exit(1)
 	}
 
@@ -54,7 +55,7 @@ func init() {
 
 func main() {
 
-	engine := html.New("./public", ".html")
+	engine := html.New("./views", ".html")
 
 	app := fiber.New(fiber.Config{
 		Views: engine,
@@ -65,12 +66,14 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	app.Static("/styles", "./static/styles")
+	app.Static("/images", "./static/images")
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		// set header to html
 		c.Set("Content-Type", "text/html") //TODO render css
 		return c.Render("index", fiber.Map{
 			"title":  "Tenant API",
-			"clustername": "test-cluster", //TODO get from k8s
 			"status": util.GetStatus(),
 		})
 	})
