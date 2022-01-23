@@ -8,11 +8,4 @@
 
 ## Reporting a Vulnerability
 
-Open a [GitHub issue](https://github.com/natron-io/tenant-api/issues/new) with the following information:
-- The vulnerability description
-- The affected version
-- The affected package
-- Reproducible steps to reproduce the vulnerability
-- The expected behavior
-- The actual behavior
-- The security impact
+Open a [GitHub issue](https://github.com/natron-io/tenant-api/issues/new) with the security issue template.
