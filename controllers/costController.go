@@ -87,12 +87,18 @@ func GetStorageCostSum(c *fiber.Ctx) error {
 		})
 	}
 
-	// create a map for each tenant with each storage class with a cost if it is not 0
+	// create a map for each tenant with each storage class with a cost if it is not 0 and add it to the tenant map
 	tenantStorageCosts := make(map[string]map[string]float64)
 	for _, tenant := range tenants {
-		for storageClass, pvcSize := range tenantPVCs[tenant] {
-			if pvcSize != 0 {
-				tenantStorageCosts[tenant][storageClass] = util.GetStorageCost(storageClass, float64(pvcSize))
+		tenantStorageCosts[tenant] = make(map[string]float64)
+		for storageClass, pvcs := range tenantPVCs[tenant] {
+			if pvcs != 0 {
+				tenantStorageCosts[tenant][storageClass], err = util.GetStorageCost(storageClass, float64(pvcs))
+				if err != nil {
+					return c.Status(500).JSON(fiber.Map{
+						"message": "Internal Server Error",
+					})
+				}
 			}
 		}
 	}

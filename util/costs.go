@@ -16,7 +16,10 @@ func GetMemoryCost(memory float64) float64 {
 	return MEMORY_COST * float64(memory) / (1024 * 1024 * 1024)
 }
 
-func GetStorageCost(storageClass string, size float64) float64 {
+func GetStorageCost(storageClass string, size float64) (float64, error) {
 	// return per GB
-	return STORAGE_COST[storageClass] * float64(size) / (1024 * 1024 * 1024)
+	if cost, ok := STORAGE_COST[storageClass]; ok {
+		return cost * float64(size) / (1024 * 1024 * 1024), nil
+	}
+	return 0, fmt.Errorf("Storage class %s not found", storageClass)
 }
