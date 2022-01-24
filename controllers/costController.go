@@ -92,8 +92,6 @@ func GetStorageCostSum(c *fiber.Ctx) error {
 	for _, tenant := range tenants {
 		tenantStorageCosts[tenant] = make(map[string]float64)
 		for storageClass, pvcs := range tenantPVCs[tenant] {
-			// log the storage class and the pvcs
-			util.InfoLogger.Printf("%s %s %s %s %d", c.IP(), c.Method(), c.Path(), storageClass, pvcs)
 			if pvcs != 0 {
 				tenantStorageCosts[tenant][storageClass], err = util.GetStorageCost(storageClass, float64(pvcs))
 				if err != nil {
