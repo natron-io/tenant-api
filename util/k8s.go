@@ -2,21 +2,23 @@ package util
 
 import (
 	"context"
+	"strconv"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
 
 var (
-	Clientset     *kubernetes.Clientset
-	LABELSELECTOR string
+	Clientset      *kubernetes.Clientset
+	TENANT_LABEL   string
+	DISCOUNT_LABEL string
 )
 
 func GetPodsByTenant(tenants []string) (map[string][]string, error) {
 	tenantPods := make(map[string][]string)
 	for _, tenant := range tenants {
 		tenantNamespaces, err := Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
-			LabelSelector: LABELSELECTOR + "=" + tenant,
+			LabelSelector: TENANT_LABEL + "=" + tenant,
 		})
 
 		if err != nil {
@@ -27,7 +29,7 @@ func GetPodsByTenant(tenants []string) (map[string][]string, error) {
 		// for each tenantNamespace get pods
 		for _, namespace := range tenantNamespaces.Items {
 			pods, err := Clientset.CoreV1().Pods(namespace.Name).List(context.TODO(), metav1.ListOptions{
-				LabelSelector: LABELSELECTOR + "=" + tenant,
+				LabelSelector: TENANT_LABEL + "=" + tenant,
 			})
 			if err != nil {
 				Status = "Error"
@@ -47,7 +49,7 @@ func GetNamespacesByTenant(tenants []string) (map[string][]string, error) {
 	tenantNamespaces := make(map[string][]string)
 	for _, tenant := range tenants {
 		namespaces, err := Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
-			LabelSelector: LABELSELECTOR + "=" + tenant,
+			LabelSelector: TENANT_LABEL + "=" + tenant,
 		})
 
 		if err != nil {
@@ -67,7 +69,7 @@ func GetServiceAccountsByTenant(tenants []string) (map[string]map[string][]strin
 	tenantServiceAccounts := make(map[string]map[string][]string)
 	for _, tenant := range tenants {
 		namespaces, err := Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
-			LabelSelector: LABELSELECTOR + "=" + tenant,
+			LabelSelector: TENANT_LABEL + "=" + tenant,
 		})
 
 		if err != nil {
@@ -98,7 +100,7 @@ func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 	tenantCPURequests := make(map[string]int64)
 	for _, tenant := range tenants {
 		namespaces, err := Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
-			LabelSelector: LABELSELECTOR + "=" + tenant,
+			LabelSelector: TENANT_LABEL + "=" + tenant,
 		})
 
 		if err != nil {
@@ -108,14 +110,30 @@ func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 
 		for _, namespace := range namespaces.Items {
 			pods, err := Clientset.CoreV1().Pods(namespace.Name).List(context.TODO(), metav1.ListOptions{
-				LabelSelector: LABELSELECTOR + "=" + tenant,
+				LabelSelector: TENANT_LABEL + "=" + tenant,
 			})
+
 			if err != nil {
 				Status = "Error"
 				return nil, err
 			}
 
 			for _, pod := range pods.Items {
+
+				// get DISCOUNT_REQUEST by DISCOUNT_LABEL
+				discount := pod.Labels[DISCOUNT_LABEL]
+				if discount == "" {
+					discount = "0"
+				}
+				// convert to float64
+				discountFloat, err := strconv.ParseFloat(discount, 64)
+				if err != nil || discountFloat < 0 || discountFloat > 1 {
+					WarningLogger.Printf("Discount value %s is not valid for pod %s with label %s", discount, pod.Name, DISCOUNT_LABEL)
+					discount = "0"
+				}
+
+				CPU_DISCOUNT_PERCENT = discountFloat
+
 				tenantCPURequests[tenant] += pod.Spec.Containers[0].Resources.Requests.Cpu().MilliValue()
 			}
 		}
@@ -127,7 +145,7 @@ func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 	tenantMemoryRequests := make(map[string]int64)
 	for _, tenant := range tenants {
 		namespaces, err := Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
-			LabelSelector: LABELSELECTOR + "=" + tenant,
+			LabelSelector: TENANT_LABEL + "=" + tenant,
 		})
 
 		if err != nil {
@@ -137,7 +155,7 @@ func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 
 		for _, namespace := range namespaces.Items {
 			pods, err := Clientset.CoreV1().Pods(namespace.Name).List(context.TODO(), metav1.ListOptions{
-				LabelSelector: LABELSELECTOR + "=" + tenant,
+				LabelSelector: TENANT_LABEL + "=" + tenant,
 			})
 			if err != nil {
 				Status = "Error"
@@ -145,6 +163,21 @@ func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 			}
 
 			for _, pod := range pods.Items {
+
+				// get DISCOUNT_REQUEST by DISCOUNT_LABEL
+				discount := pod.Labels[DISCOUNT_LABEL]
+				if discount == "" {
+					discount = "0"
+				}
+				// convert to float64
+				discountFloat, err := strconv.ParseFloat(discount, 64)
+				if err != nil || discountFloat < 0 || discountFloat > 1 {
+					WarningLogger.Printf("Discount value %s is not valid for pod %s with label %s", discount, pod.Name, DISCOUNT_LABEL)
+					discount = "0"
+				}
+
+				MEMORY_DISCOUNT_PERCENT = discountFloat
+
 				tenantMemoryRequests[tenant] += pod.Spec.Containers[0].Resources.Requests.Memory().Value()
 			}
 		}
@@ -156,7 +189,7 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 	tenantPVCs := make(map[string]map[string]int64)
 	for _, tenant := range tenants {
 		namespaces, err := Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
-			LabelSelector: LABELSELECTOR + "=" + tenant,
+			LabelSelector: TENANT_LABEL + "=" + tenant,
 		})
 
 		if err != nil {
@@ -175,6 +208,19 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 			// create a map for each storage class with a count of pvc size if it exists
 			tenantPVCs[tenant] = make(map[string]int64)
 			for _, pvc := range pvcList.Items {
+				// get DISCOUNT_REQUEST by DISCOUNT_LABEL
+				discount := pvc.Labels[DISCOUNT_LABEL]
+				if discount == "" {
+					discount = "0"
+				}
+				// convert to float64
+				discountFloat, err := strconv.ParseFloat(discount, 64)
+				if err != nil || discountFloat < 0 || discountFloat > 1 {
+					WarningLogger.Printf("Discount value %s is not valid for pod %s with label %s", discount, pvc.Name, DISCOUNT_LABEL)
+					discount = "0"
+				}
+
+				STORAGE_DISCOUNT_PERCENT = discountFloat
 				tenantPVCs[tenant][*pvc.Spec.StorageClassName] += pvc.Spec.Resources.Requests.Storage().Value()
 			}
 
@@ -185,4 +231,51 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 		}
 	}
 	return tenantPVCs, nil
+}
+
+func GetIngressRequestsSumByTenant(tenants []string) (map[string]int64, error) {
+	tenantsIngress := make(map[string]int64)
+
+	for _, tenant := range tenants {
+		namespaces, err := Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
+			LabelSelector: TENANT_LABEL + "=" + tenant,
+		})
+
+		if err != nil {
+			Status = "Error"
+			return nil, err
+		}
+
+		// get ingress for each namespace in the tenant and add it to the map of ingress for the tenant
+		for _, namespace := range namespaces.Items {
+			ingressList, err := Clientset.NetworkingV1().Ingresses(namespace.Name).List(context.TODO(), metav1.ListOptions{
+				LabelSelector: TENANT_LABEL + "=" + tenant,
+			})
+
+			if err != nil {
+				Status = "Error"
+				return nil, err
+			}
+
+			for _, ingress := range ingressList.Items {
+				// get DISCOUNT_REQUEST by DISCOUNT_LABEL
+				discount := ingress.Labels[DISCOUNT_LABEL]
+				if discount == "" {
+					discount = "0"
+				}
+				// convert to float64
+				discountFloat, err := strconv.ParseFloat(discount, 64)
+				if err != nil || discountFloat < 0 || discountFloat > 1 {
+					WarningLogger.Printf("Discount value %s is not valid for pod %s with label %s", discount, ingress.Name, DISCOUNT_LABEL)
+					discount = "0"
+				}
+
+				INGRESS_DISCOUNT_PERCENT = discountFloat
+
+				tenantsIngress[tenant] += int64(len(ingress.Spec.Rules))
+			}
+		}
+	}
+
+	return tenantsIngress, nil
 }

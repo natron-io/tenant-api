@@ -25,9 +25,11 @@ func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 	requests.Get("/cpu", controllers.GetCPURequestsSum)
 	requests.Get("/memory", controllers.GetMemoryRequestsSum)
 	requests.Get("/storage", controllers.GetStorageRequestsSum)
+	requests.Get("/ingress", controllers.GetIngressRequestsSum)
 
 	costs := v1.Group("/costs")
 	costs.Get("/cpu", controllers.GetCPUCostSum)
 	costs.Get("/memory", controllers.GetMemoryCostSum)
 	costs.Get("/storage", controllers.GetStorageCostSum)
+	costs.Get("/ingress", controllers.GetIngressCostSum)
 }

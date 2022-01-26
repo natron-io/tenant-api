@@ -113,3 +113,34 @@ func GetStorageCostSum(c *fiber.Ctx) error {
 
 	return c.JSON(tenantStorageCosts)
 }
+
+func GetIngressCostSum(c *fiber.Ctx) error {
+
+	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
+
+	tenants := CheckAuth(c)
+	if tenants == nil {
+		c.Status(401).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+		return c.Redirect("/login/github")
+	}
+
+	// create a map for each tenant with a added ingress requests
+	tenantIngressRequests, err := util.GetIngressRequestsSumByTenant(tenants)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Internal Server Error",
+		})
+	}
+
+	// create a map for each tenant with a added ingress costs only if cost is not 0
+	tenantIngressCosts := make(map[string]float64)
+	for _, tenant := range tenants {
+		if tenantIngressRequests[tenant] != 0 {
+			tenantIngressCosts[tenant] = util.GetIngressCost(tenantIngressRequests[tenant])
+		}
+	}
+
+	return c.JSON(tenantIngressCosts)
+}
