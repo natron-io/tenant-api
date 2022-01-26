@@ -12,23 +12,33 @@ Tenants represents the teams of a GitHub organization.
 
 ## api
 
-### auth
+#### `GET`
+
+#### auth
 `/login/github` - Login with GitHub \
 `/login/github/callback` - Callback after GitHub login \
 `/logout` - Logout
 
-### tenant ressource requests
+##### general tenant resources
 `/api/v1/pods` - Get pods of a tenant \
 `/api/v1/namespaces` - Get namespaces of a tenant \
 `/api/v1/serviceaccounts` - Get serviceaccounts of a tenant by namespaces \
+
+##### specific tenant resources
 `/api/v1/requests/cpu` - Get cpurequests in **Milicores** of a tenant \
 `/api/v1/requests/memory` - Get memoryrequests in **Bytes** of a tenant \
 `/api/v1/requests/storage` - Get storagerequests in **Bytes** of a tenant by storageclass
 
-### tenant ressource costs
+##### tenant ressource costs
 `/api/v1/costs/cpu` - Get the cpu costs by CPU \
 `/api/v1/costs/memory` - Get the memory costs by Memory \
 `/api/v1/costs/storage` - Get the storage costs by StorageClass
+
+#### `POST`
+
+##### auth
+You can send the github access token with json body `{"github_access_token": "..."}` to the `/login/github` endpoint.
+> The access token you need to generate must have the `read:org` scope.
 
 ## env
 
