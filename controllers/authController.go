@@ -11,6 +11,9 @@ import (
 )
 
 func GithubLogin(c *fiber.Ctx) error {
+
+	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
+
 	redirectURL := fmt.Sprintf("https://github.com/login/oauth/authorize?scope=read:org&client_id=%s&redirect_uri=%s",
 		util.CLIENT_ID, util.CALLBACK_URL+"/login/github/callback")
 
@@ -18,6 +21,8 @@ func GithubLogin(c *fiber.Ctx) error {
 }
 
 func FrontendGithubLogin(c *fiber.Ctx) error {
+
+	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 
 	var data map[string]string
 
@@ -35,11 +40,11 @@ func FrontendGithubLogin(c *fiber.Ctx) error {
 			"message": "Invalid request body",
 		})
 	} else {
-		util.InfoLogger.Printf("Received access token: %s", accessToken)
+		// util.InfoLogger.Printf("Received access token: %s", accessToken)
 
 		githubData := util.GetGithubTeams(accessToken)
 
-		util.InfoLogger.Printf("Received github data: %s", githubData)
+		// util.InfoLogger.Printf("Received github data: %s", githubData)
 
 		return LoggedIn(c, githubData)
 	}
@@ -47,6 +52,9 @@ func FrontendGithubLogin(c *fiber.Ctx) error {
 }
 
 func GithubCallback(c *fiber.Ctx) error {
+
+	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
+
 	// get code from "code" query param
 	code := c.Query("code")
 
@@ -54,7 +62,7 @@ func GithubCallback(c *fiber.Ctx) error {
 
 	githubAccessToken := util.GetGithubAccessToken(code)
 
-	util.InfoLogger.Printf("Received access token: %s", githubAccessToken)
+	// util.InfoLogger.Printf("Received access token: %s", githubAccessToken)
 
 	githubData := util.GetGithubTeams(githubAccessToken)
 
