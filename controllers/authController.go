@@ -75,9 +75,9 @@ func LoggedIn(c *fiber.Ctx, githubData string) error {
 
 	c.Cookie(cookie)
 
+	// return token
 	return c.JSON(fiber.Map{
-		"message": "Logged in",
-		"data":    githubTeamSlugs,
+		"token": tokenString,
 	})
 
 }
