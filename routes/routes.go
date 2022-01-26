@@ -9,6 +9,7 @@ import (
 func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 	// Auth
 	app.Get("/login/github", controllers.GithubLogin)
+	app.Post("/login/github", controllers.FrontendGithubLogin)
 	app.Get("/login/github/callback", controllers.GithubCallback)
 	app.Get("/logout", controllers.Logout)
 

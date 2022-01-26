@@ -17,6 +17,35 @@ func GithubLogin(c *fiber.Ctx) error {
 	return c.Redirect(redirectURL)
 }
 
+func FrontendGithubLogin(c *fiber.Ctx) error {
+
+	var data map[string]string
+
+	if err := c.BodyParser(&data); err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"status":  "error",
+			"message": "Invalid request body",
+		})
+	}
+
+	// get access_token from data
+	if accessToken := data["github_access_token"]; accessToken == "" {
+		return c.Status(400).JSON(fiber.Map{
+			"status":  "error",
+			"message": "Invalid request body",
+		})
+	} else {
+		util.InfoLogger.Printf("Received access token: %s", accessToken)
+
+		githubData := util.GetGithubTeams(accessToken)
+
+		util.InfoLogger.Printf("Received github data: %s", githubData)
+
+		return LoggedIn(c, githubData)
+	}
+
+}
+
 func GithubCallback(c *fiber.Ctx) error {
 	// get code from "code" query param
 	code := c.Query("code")
@@ -25,7 +54,7 @@ func GithubCallback(c *fiber.Ctx) error {
 
 	githubAccessToken := util.GetGithubAccessToken(code)
 
-	// util.InfoLogger.Printf("Received access token: %s", githubAccessToken)
+	util.InfoLogger.Printf("Received access token: %s", githubAccessToken)
 
 	githubData := util.GetGithubTeams(githubAccessToken)
 
