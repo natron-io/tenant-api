@@ -30,6 +30,8 @@ func LoadEnv() error {
 		WarningLogger.Println("CALLBACK_URL is not set")
 		CALLBACK_URL = "http://localhost:3000"
 		InfoLogger.Printf("CALLBACK_URL set using default: %s", CALLBACK_URL)
+	} else {
+		InfoLogger.Printf("CALLBACK_URL set using env: %s", CALLBACK_URL)
 	}
 
 	if SECRET_KEY = os.Getenv("SECRET_KEY"); SECRET_KEY == "" {
@@ -39,22 +41,36 @@ func LoadEnv() error {
 		InfoLogger.Printf("SECRET_KEY is not set, using random key: %s", SECRET_KEY)
 	}
 
-	if LABELSELECTOR = os.Getenv("LABELSELECTOR"); LABELSELECTOR == "" {
-		WarningLogger.Println("LABELSELECTOR is not set")
-		LABELSELECTOR = "natron.io/tenant"
-		InfoLogger.Printf("LABELSELECTOR set using default: %s", LABELSELECTOR)
+	if TENANT_LABEL = os.Getenv("TENANT_LABEL"); TENANT_LABEL == "" {
+		WarningLogger.Println("TENANT_LABEL is not set")
+		TENANT_LABEL = "natron.io/tenant"
+		InfoLogger.Printf("TENANT_LABEL set using default: %s", TENANT_LABEL)
+	} else {
+		InfoLogger.Printf("TENANT_LABEL set using env: %s", TENANT_LABEL)
+	}
+
+	if DISCOUNT_LABEL = os.Getenv("DISCOUNT_LABEL"); DISCOUNT_LABEL == "" {
+		WarningLogger.Println("DISCOUNT_LABEL is not set")
+		DISCOUNT_LABEL = "natron.io/discount"
+		InfoLogger.Printf("DISCOUNT_LABEL set using default: %s", DISCOUNT_LABEL)
+	} else {
+		InfoLogger.Printf("DISCOUNT_LABEL set using env: %s", DISCOUNT_LABEL)
 	}
 
 	if CPU_COST, err = strconv.ParseFloat(os.Getenv("CPU_COST"), 64); CPU_COST == 0 || err != nil {
 		WarningLogger.Println("CPU_COST is not set or invalid float value")
 		CPU_COST = 1.00
 		InfoLogger.Printf("CPU_COST set using default: %f", CPU_COST)
+	} else {
+		InfoLogger.Printf("CPU_COST set using env: %f", CPU_COST)
 	}
 
 	if MEMORY_COST, err = strconv.ParseFloat(os.Getenv("MEMORY_COST"), 64); MEMORY_COST == 0 || err != nil {
 		WarningLogger.Println("MEMORY_COST is not set or invalid float value")
 		MEMORY_COST = 1.00
 		InfoLogger.Printf("MEMORY_COST set using default: %f", MEMORY_COST)
+	} else {
+		InfoLogger.Printf("MEMORY_COST set using env: %f", MEMORY_COST)
 	}
 
 	// get every env variable starting with STORAGE_COST_ and parse it to STORAGE_COST with the storage class name after STORAGE_COST_ as key
@@ -86,6 +102,14 @@ func LoadEnv() error {
 			"default": {"cost": 1.00},
 		}
 		InfoLogger.Printf("cost for storage class default set using default: %f", STORAGE_COST["default"]["cost"])
+	}
+
+	if INGRESS_COST, err = strconv.ParseFloat(os.Getenv("INGRESS_COST"), 64); INGRESS_COST == 0 || err != nil {
+		WarningLogger.Println("INGRESS_COST is not set or invalid float value")
+		INGRESS_COST = 1.00
+		InfoLogger.Printf("INGRESS_COST set using default: %f", INGRESS_COST)
+	} else {
+		InfoLogger.Printf("INGRESS_COST set to: %f", INGRESS_COST)
 	}
 
 	return nil

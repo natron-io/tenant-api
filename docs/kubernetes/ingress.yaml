@@ -4,6 +4,8 @@ metadata:
   name: tenant-api
   labels:
     app: tenant-api
+    natron.io/tenant: netrics
+    natron.io/discount: "0.5"
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-natron
 spec:

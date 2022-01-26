@@ -27,12 +27,14 @@ Tenants represents the teams of a GitHub organization.
 ##### specific tenant resources
 `/api/v1/requests/cpu` - Get cpurequests in **Milicores** of a tenant \
 `/api/v1/requests/memory` - Get memoryrequests in **Bytes** of a tenant \
-`/api/v1/requests/storage` - Get storagerequests in **Bytes** of a tenant by storageclass
+`/api/v1/requests/storage` - Get storagerequests in **Bytes** of a tenant by storageclass \
+`/api/v1/requests/ingress` - Get ingress ressources total of a tenant by ingressclass
 
 ##### tenant ressource costs
 `/api/v1/costs/cpu` - Get the cpu costs by CPU \
 `/api/v1/costs/memory` - Get the memory costs by Memory \
-`/api/v1/costs/storage` - Get the storage costs by StorageClass
+`/api/v1/costs/storage` - Get the storage costs by StorageClass \
+`/api/v1/costs/ingress` - Get the ingress costs by tenant
 
 #### `POST`
 
@@ -51,12 +53,14 @@ You can send the github access token with json body `{"github_access_token": "..
 `SECRET_KEY` - JWT secret key *optional* (default: random 32 bytes, displayed in the logs)
 
 ### tenant ressource identifiers
-`LABELSELECTOR` - label key for selecting tenant ressources *optional* (default: "natron.io/tenant")
+`TENANT_LABEL` - label key for selecting tenant ressources *optional* (default: "natron.io/tenant")
 
 ### cost calculation values
+`DISCOUNT_LABEL` - label key for selecting the discount value *optional* (default: "natron.io/discount" (float -> e.g. "0.1"))
 `CPU_COST` - Cost of a cpu in your currency *optional* (default: 1.00 for 1 CPU) \
 `MEMORY_COST` - Cost of a memory in your currency *optional* (default: 1.00 for 1 GB) \
-`STORAGE_COST_<storageclass name>` - Cost of your storage classes in your currency *optional, multiple allowed* (default: 1.00 for 1 GB)
+`STORAGE_COST_<storageclass name>` - Cost of your storage classes in your currency *optional, multiple allowed* (default: 1.00 for 1 GB) \
+`INGRESS_COST` - Cost of ingress in your currency *optional* (default: 1.00 for 1 ingress)
 
 ## deployment
 *example deployment files:* [kubernetes manifests](docs/kubernetes)
