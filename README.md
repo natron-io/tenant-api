@@ -15,6 +15,8 @@ Tenants represents the teams of a GitHub organization.
 #### `GET`
 
 #### auth
+> deactivated when `DASHBOARD_ENABLED` is `false`
+
 `/login/github` - Login with GitHub \
 `/login/github/callback` - Callback after GitHub login \
 `/logout` - Logout
@@ -39,12 +41,18 @@ Tenants represents the teams of a GitHub organization.
 #### `POST`
 
 ##### auth
-You can send the github access token with json body `{"github_access_token": "..."}` to the `/login/github` endpoint.
-> The access token you need to generate must have the `read:org` scope.
+> enabled when `DASHBOARD_ENABLED` is `true`
+
+You can send the github code with json body `{"github_code": "..."}` to the `/login/github` endpoint.
+> The code you need to generate must have the `read:org` scope.
 
 ## env
 
 ### GitHub
+> There are two ways for authenticating with GitHub. You can authenticate without a dashboard, so the github callback url is not the same as the dashboard.
+
+`DASHBOARD_ENABLED` - Disable callback github login function. Default: `false`
+
 `CLIENT_ID` - GitHub client id **required** \
 `CLIENT_SECRET` - GitHub client secret **required** \
 `CALLBACK_URL` - GitHub oauth callback url without path *optional* (default: "http://localhost:3000")
@@ -56,7 +64,7 @@ You can send the github access token with json body `{"github_access_token": "..
 `TENANT_LABEL` - label key for selecting tenant ressources *optional* (default: "natron.io/tenant")
 
 ### cost calculation values
-`DISCOUNT_LABEL` - label key for selecting the discount value *optional* (default: "natron.io/discount" (float -> e.g. "0.1"))
+`DISCOUNT_LABEL` - label key for selecting the discount value *optional* (default: "natron.io/discount" (float -> e.g. "0.1")) \
 `CPU_COST` - Cost of a cpu in your currency *optional* (default: 1.00 for 1 CPU) \
 `MEMORY_COST` - Cost of a memory in your currency *optional* (default: 1.00 for 1 GB) \
 `STORAGE_COST_<storageclass name>` - Cost of your storage classes in your currency *optional, multiple allowed* (default: 1.00 for 1 GB) \

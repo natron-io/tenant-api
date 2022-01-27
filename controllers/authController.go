@@ -34,17 +34,19 @@ func FrontendGithubLogin(c *fiber.Ctx) error {
 	}
 
 	// get access_token from data
-	if accessToken := data["github_access_token"]; accessToken == "" {
+	if githubCode := data["github_code"]; githubCode == "" {
 		return c.Status(400).JSON(fiber.Map{
 			"status":  "error",
 			"message": "Invalid request body",
 		})
 	} else {
-		// util.InfoLogger.Printf("Received access token: %s", accessToken)
+		// util.InfoLogger.Printf("Received code: %s", accessToken)
 
-		githubData := util.GetGithubTeams(accessToken)
+		githubAccessToken := util.GetGithubAccessToken(githubCode)
 
 		// util.InfoLogger.Printf("Received github data: %s", githubData)
+
+		githubData := util.GetGithubTeams(githubAccessToken)
 
 		return LoggedIn(c, githubData)
 	}
@@ -103,14 +105,16 @@ func LoggedIn(c *fiber.Ctx, githubData string) error {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ := token.SignedString([]byte(util.SECRET_KEY))
 
-	cookie := &fiber.Cookie{
-		Name:    "tenant-api-token",
-		Value:   tokenString,
-		Expires: time.Now().Add(time.Hour * 24),
-		Path:    "/",
-	}
+	if !util.DASHBOARD_ENABLED {
+		cookie := &fiber.Cookie{
+			Name:    "tenant-api-token",
+			Value:   tokenString,
+			Expires: time.Now().Add(time.Hour * 24),
+			Path:    "/",
+		}
 
-	c.Cookie(cookie)
+		c.Cookie(cookie)
+	}
 
 	// return token
 	return c.JSON(fiber.Map{

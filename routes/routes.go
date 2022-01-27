@@ -3,15 +3,19 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/natron-io/tenant-api/controllers"
+	"github.com/natron-io/tenant-api/util"
 	"k8s.io/client-go/kubernetes"
 )
 
 func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 	// Auth
-	app.Get("/login/github", controllers.GithubLogin)
-	app.Post("/login/github", controllers.FrontendGithubLogin)
-	app.Get("/login/github/callback", controllers.GithubCallback)
-	app.Get("/logout", controllers.Logout)
+	if util.DASHBOARD_ENABLED {
+		app.Post("/login/github", controllers.FrontendGithubLogin)
+	} else {
+		app.Get("/login/github", controllers.GithubLogin)
+		app.Get("/logout", controllers.Logout)
+		app.Get("/login/github/callback", controllers.GithubCallback)
+	}
 
 	// API
 	api := app.Group("/api")
