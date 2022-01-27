@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -124,20 +125,52 @@ func LoggedIn(c *fiber.Ctx, githubData string) error {
 }
 
 func CheckAuth(c *fiber.Ctx) []string {
+	var token *jwt.Token
+	var tokenString string
 	cookie := c.Cookies("tenant-api-token")
 
-	if cookie == "" {
-		util.WarningLogger.Printf("IP %s is not authorized", c.IP())
-		return nil
-	}
+	if util.FRONTENDAUTH_ENABLED {
 
-	token, _ := jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
-		_, ok := token.Method.(*jwt.SigningMethodHMAC)
-		if !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		var body map[string]string
+		if err := c.BodyParser(&body); err != nil {
+			return nil
 		}
-		return []byte(util.SECRET_KEY), nil
-	})
+
+		reqToken := c.Get("Authorization")
+		splitToken := strings.Split(reqToken, "Bearer ")
+
+		util.InfoLogger.Printf("reqToken %s", reqToken)
+
+		if len(splitToken) == 2 && splitToken[1] != "" {
+			tokenString = splitToken[1]
+		} else if body["token"] != "" {
+			tokenString = body["token"]
+		} else {
+			return nil
+		}
+
+		token, _ = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			_, ok := token.Method.(*jwt.SigningMethodHMAC)
+			if !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
+			return []byte(util.SECRET_KEY), nil
+		})
+
+	} else {
+		if cookie == "" {
+			util.WarningLogger.Printf("IP %s is not authorized", c.IP())
+			return nil
+		}
+
+		token, _ = jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
+			_, ok := token.Method.(*jwt.SigningMethodHMAC)
+			if !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
+			return []byte(util.SECRET_KEY), nil
+		})
+	}
 
 	claims := token.Claims.(jwt.MapClaims)
 

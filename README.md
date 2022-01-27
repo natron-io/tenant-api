@@ -13,7 +13,7 @@ Tenants represents the teams of a GitHub organization.
 ## api
 
 #### `GET`
-
+> **important:** for authenticated access you need to provide the `Authorization` header with the `Bearer` token. Or you can provide it in the POST request in the following format `{"token": "<jwt token>"}`. **Note:** this will only work if `FRONTENDAUTH_ENABLED` is set to `true` in the env variables. If not set it will look for the cookie `tenant-api-token` on the same webpage in the dedicated local storage.
 #### auth
 > enabled when `FRONTENDAUTH_ENABLED` is `false`
 

@@ -14,7 +14,9 @@ func GetCPUCostSum(c *fiber.Ctx) error {
 		c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
-		return c.Redirect("/login/github")
+		if !util.FRONTENDAUTH_ENABLED {
+			return c.Redirect("/login/github")
+		}
 	}
 
 	// create a map for each tenant with a added cpu requests
@@ -45,7 +47,9 @@ func GetMemoryCostSum(c *fiber.Ctx) error {
 		c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
-		return c.Redirect("/login/github")
+		if !util.FRONTENDAUTH_ENABLED {
+			return c.Redirect("/login/github")
+		}
 	}
 
 	// create a map for each tenant with a added memory requests
@@ -76,7 +80,9 @@ func GetStorageCostSum(c *fiber.Ctx) error {
 		c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
-		return c.Redirect("/login/github")
+		if !util.FRONTENDAUTH_ENABLED {
+			return c.Redirect("/login/github")
+		}
 	}
 
 	// create a map for each tenant with a map of storage classes with calculated pvcs in it
@@ -123,7 +129,9 @@ func GetIngressCostSum(c *fiber.Ctx) error {
 		c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
-		return c.Redirect("/login/github")
+		if !util.FRONTENDAUTH_ENABLED {
+			return c.Redirect("/login/github")
+		}
 	}
 
 	// create a map for each tenant with a added ingress requests
