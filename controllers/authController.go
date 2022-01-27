@@ -138,15 +138,6 @@ func CheckAuth(c *fiber.Ctx) []string {
 		// split bearer token to get token
 		bearerTokenSplit := strings.Split(bearerToken, " ")
 		tokenString = bearerTokenSplit[1]
-		util.InfoLogger.Printf("Received token: %s", tokenString)
-
-		token, _ = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			_, ok := token.Method.(*jwt.SigningMethodHMAC)
-			if !ok {
-				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-			}
-			return []byte(util.SECRET_KEY), nil
-		})
 
 	} else {
 		if cookie == "" {
@@ -154,14 +145,16 @@ func CheckAuth(c *fiber.Ctx) []string {
 			return nil
 		}
 
-		token, _ = jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
-			_, ok := token.Method.(*jwt.SigningMethodHMAC)
-			if !ok {
-				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-			}
-			return []byte(util.SECRET_KEY), nil
-		})
+		tokenString = cookie
 	}
+
+	token, _ = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(util.SECRET_KEY), nil
+	})
 
 	claims := token.Claims.(jwt.MapClaims)
 
