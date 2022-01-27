@@ -18,13 +18,23 @@
             <h3>GitHub project(s):</h3>
             <a href="https://github.com/natron-io/tenant-api">https://github.com/natron-io/tenant-api</a> <br/>
             <a href="https://github.com/natron-io/tenant-dashboard">https://github.com/natron-io/tenant-dashboard</a>
-            <p style="background-color: rgb(243, 243, 243);">
+            {{if .status == "Error"}}
+            <p style="background-color: #FF7473;">
                 Status: {{.status}} <br/>
+                Dashboard enabled: {{.frontendAuthEnabled}} <br/>
             </p>
+            {{else}}
+            <p style="background-color: rgb(72, 207, 101);">
+                Status: {{.status}} <br/>
+                Dashboard enabled: {{.frontendAuthEnabled}} <br/>
+            </p>
+            {{end}}
+            {{if .frontendAuthEnabled}}
             <a id="github-button" class="btn btn-block btn-github" href="/login/github">
                 <img src="../images/GitHub-Mark-Light-32px.png" alt="GitHub logo" />
                 &nbsp;&nbsp;&nbsp; Sign in with GitHub
             </a>
+            {{end}}
         </div>
     </body>
 </html>
