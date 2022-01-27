@@ -131,23 +131,14 @@ func CheckAuth(c *fiber.Ctx) []string {
 
 	if util.FRONTENDAUTH_ENABLED {
 
-		var body map[string]string
-		if err := c.BodyParser(&body); err != nil {
-			return nil
-		}
+		// get bearer token from header
+		bearerToken := c.Get("Authorization")
+		util.InfoLogger.Printf("Received bearer token: %s", bearerToken)
 
-		reqToken := c.Get("Authorization")
-		splitToken := strings.Split(reqToken, "Bearer ")
-
-		util.InfoLogger.Printf("reqToken %s", reqToken)
-
-		if len(splitToken) == 2 && splitToken[1] != "" {
-			tokenString = splitToken[1]
-		} else if body["token"] != "" {
-			tokenString = body["token"]
-		} else {
-			return nil
-		}
+		// split bearer token to get token
+		bearerTokenSplit := strings.Split(bearerToken, " ")
+		tokenString = bearerTokenSplit[1]
+		util.InfoLogger.Printf("Received token: %s", tokenString)
 
 		token, _ = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			_, ok := token.Method.(*jwt.SigningMethodHMAC)
