@@ -9,7 +9,7 @@ import (
 
 func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 	// Auth
-	if util.DASHBOARD_ENABLED {
+	if util.FRONTENDAUTH_ENABLED {
 		app.Post("/login/github", controllers.FrontendGithubLogin)
 	} else {
 		app.Get("/login/github", controllers.GithubLogin)

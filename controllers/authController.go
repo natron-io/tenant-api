@@ -105,7 +105,7 @@ func LoggedIn(c *fiber.Ctx, githubData string) error {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ := token.SignedString([]byte(util.SECRET_KEY))
 
-	if !util.DASHBOARD_ENABLED {
+	if !util.FRONTENDAUTH_ENABLED {
 		cookie := &fiber.Cookie{
 			Name:    "tenant-api-token",
 			Value:   tokenString,

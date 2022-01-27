@@ -15,7 +15,7 @@ Tenants represents the teams of a GitHub organization.
 #### `GET`
 
 #### auth
-> enabled when `DASHBOARD_ENABLED` is `false`
+> enabled when `FRONTENDAUTH_ENABLED` is `false`
 
 `/login/github` - Login with GitHub \
 `/login/github/callback` - Callback after GitHub login \
@@ -41,7 +41,7 @@ Tenants represents the teams of a GitHub organization.
 #### `POST`
 
 ##### auth
-> enabled when `DASHBOARD_ENABLED` is `true`
+> enabled when `FRONTENDAUTH_ENABLED` is `true`
 
 You can send the github code with json body `{"github_code": "..."}` to the `/login/github` endpoint.
 > The code you need to generate must have the `read:org` scope.
@@ -51,7 +51,7 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 ### GitHub
 > There are two ways for authenticating with GitHub. You can authenticate without a dashboard, so the github callback url is not the same as the dashboard.
 
-`DASHBOARD_ENABLED` - Disable callback github login function. Default: `false`
+`FRONTENDAUTH_ENABLED` - Disable callback github login function. Default: `false`
 
 `CLIENT_ID` - GitHub client id **required** \
 `CLIENT_SECRET` - GitHub client secret **required** \
