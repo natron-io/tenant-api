@@ -139,6 +139,11 @@ func CheckAuth(c *fiber.Ctx) []string {
 		bearerTokenSplit := strings.Split(bearerToken, " ")
 		tokenString = bearerTokenSplit[1]
 
+		if tokenString == "" {
+			// return unauthorized
+			return nil
+		}
+
 	} else {
 		if cookie == "" {
 			util.WarningLogger.Printf("IP %s is not authorized", c.IP())
