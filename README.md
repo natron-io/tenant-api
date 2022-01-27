@@ -15,7 +15,7 @@ Tenants represents the teams of a GitHub organization.
 #### `GET`
 
 #### auth
-> deactivated when `DASHBOARD_ENABLED` is `false`
+> enabled when `DASHBOARD_ENABLED` is `false`
 
 `/login/github` - Login with GitHub \
 `/login/github/callback` - Callback after GitHub login \

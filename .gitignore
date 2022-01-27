@@ -5,3 +5,4 @@ docs/kubernetes/pod.yaml
 docs/kubernetes/pvc.yaml
 docs/kubernetes/oingress.yaml
 docs/kubernetes/ns.yaml
+.DS_Store
