@@ -41,6 +41,14 @@ func LoadEnv() error {
 		InfoLogger.Printf("SECRET_KEY is not set, using random key: %s", SECRET_KEY)
 	}
 
+	if DASHBOARD_ENABLED, err = strconv.ParseBool(os.Getenv("DASHBOARD_ENABLED")); err != nil {
+		WarningLogger.Println("DASHBOARD_ENABLED is not set")
+		DASHBOARD_ENABLED = false
+		InfoLogger.Printf("DASHBOARD_ENABLED set using default: %t", DASHBOARD_ENABLED)
+	} else {
+		InfoLogger.Printf("DASHBOARD_ENABLED set using env: %t", DASHBOARD_ENABLED)
+	}
+
 	if TENANT_LABEL = os.Getenv("TENANT_LABEL"); TENANT_LABEL == "" {
 		WarningLogger.Println("TENANT_LABEL is not set")
 		TENANT_LABEL = "natron.io/tenant"
