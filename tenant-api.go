@@ -27,6 +27,7 @@ import (
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/util/flowcontrol"
 )
 
 func init() {
@@ -39,12 +40,15 @@ func init() {
 		os.Exit(1)
 	}
 
-	// creates the in-cluster config
+	// creates the in-cluster config with ratelimiter to qps: 20 and burst: 50
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		util.ErrorLogger.Printf("Error creating in-cluster config: %v", err)
+		util.ErrorLogger.Println("Error creating in-cluster config")
 		os.Exit(1)
 	}
+
+	config.RateLimiter = flowcontrol.NewTokenBucketRateLimiter(20, 50)
+
 	// creates the clientset
 	util.Clientset, err = kubernetes.NewForConfig(config)
 	if err != nil {
