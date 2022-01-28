@@ -136,7 +136,11 @@ func CheckAuth(c *fiber.Ctx) []string {
 
 		// split bearer token to get token
 		bearerTokenSplit := strings.Split(bearerToken, " ")
-		tokenString = bearerTokenSplit[1]
+		if len(bearerTokenSplit) == 2 {
+			tokenString = bearerTokenSplit[1]
+		} else {
+			return nil
+		}
 
 		if tokenString == "" {
 			// return unauthorized
