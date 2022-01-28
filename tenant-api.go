@@ -40,7 +40,7 @@ func init() {
 		os.Exit(1)
 	}
 
-	// creates the in-cluster config with ratelimiter to qps: 20 and burst: 100
+	// creates the in-cluster config with ratelimiter to qps: 20 and burst: 50
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		util.ErrorLogger.Println("Error creating in-cluster config")
