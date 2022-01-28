@@ -299,8 +299,8 @@ func GetIngressCostSum(c *fiber.Ctx) error {
 	// create a map for each tenant with a added ingress costs only if cost is not 0
 	tenantIngressCosts := make(map[string]float64)
 	for _, tenant := range tenants {
-		if tenantIngressRequests[tenant] != 0 {
-			tenantIngressCosts[tenant] = util.GetIngressCost(tenantIngressRequests[tenant])
+		if len(tenantIngressRequests[tenant]) != 0 {
+			tenantIngressCosts[tenant] = util.GetIngressCost(len(tenantIngressRequests[tenant]))
 		}
 	}
 
@@ -345,8 +345,8 @@ func GetTenantIngressCostSum(c *fiber.Ctx) error {
 	// create a map for each tenant with a added ingress costs only if cost is not 0
 	tenantIngressCosts := make(map[string]float64)
 	for _, tenant := range tenants {
-		if tenantIngressRequests[tenant] != 0 {
-			tenantIngressCosts[tenant] = util.GetIngressCost(tenantIngressRequests[tenant])
+		if len(tenantIngressRequests[tenant]) != 0 {
+			tenantIngressCosts[tenant] = util.GetIngressCost(len(tenantIngressRequests[tenant]))
 		}
 	}
 

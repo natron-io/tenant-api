@@ -233,8 +233,8 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 	return tenantPVCs, nil
 }
 
-func GetIngressRequestsSumByTenant(tenants []string) (map[string]int64, error) {
-	tenantsIngress := make(map[string]int64)
+func GetIngressRequestsSumByTenant(tenants []string) (map[string][]string, error) {
+	tenantsIngress := make(map[string][]string)
 
 	for _, tenant := range tenants {
 		namespaces, err := Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{
@@ -272,7 +272,8 @@ func GetIngressRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 
 				INGRESS_DISCOUNT_PERCENT = discountFloat
 
-				tenantsIngress[tenant] += int64(len(ingress.Spec.Rules))
+				// apend ingress hostname to the list of ingress for the tenant
+				tenantsIngress[tenant] = append(tenantsIngress[tenant], ingress.Name)
 			}
 		}
 	}
