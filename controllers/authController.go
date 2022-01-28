@@ -133,7 +133,6 @@ func CheckAuth(c *fiber.Ctx) []string {
 
 		// get bearer token from header
 		bearerToken := c.Get("Authorization")
-		util.InfoLogger.Printf("Received bearer token: %s", bearerToken)
 
 		// split bearer token to get token
 		bearerTokenSplit := strings.Split(bearerToken, " ")
