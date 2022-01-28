@@ -35,6 +35,6 @@ func GetStorageCost(storageClass string, size float64) (float64, error) {
 	return (STORAGE_COST[storageClass]["cost"] * float64(size) / (1024 * 1024 * 1024)) * (1 - STORAGE_DISCOUNT_PERCENT), nil
 }
 
-func GetIngressCost(ingress int64) float64 {
+func GetIngressCost(ingress int) float64 {
 	return (INGRESS_COST * float64(ingress)) * (1 - INGRESS_DISCOUNT_PERCENT)
 }
