@@ -41,14 +41,6 @@ func LoadEnv() error {
 		InfoLogger.Printf("SECRET_KEY is not set, using random key: %s", SECRET_KEY)
 	}
 
-	if FRONTENDAUTH_ENABLED, err = strconv.ParseBool(os.Getenv("FRONTENDAUTH_ENABLED")); err != nil {
-		WarningLogger.Println("FRONTENDAUTH_ENABLED is not set")
-		FRONTENDAUTH_ENABLED = false
-		InfoLogger.Printf("FRONTENDAUTH_ENABLED set using default: %t", FRONTENDAUTH_ENABLED)
-	} else {
-		InfoLogger.Printf("FRONTENDAUTH_ENABLED set using env: %t", FRONTENDAUTH_ENABLED)
-	}
-
 	if TENANT_LABEL = os.Getenv("TENANT_LABEL"); TENANT_LABEL == "" {
 		WarningLogger.Println("TENANT_LABEL is not set")
 		TENANT_LABEL = "natron.io/tenant"

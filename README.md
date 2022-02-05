@@ -13,13 +13,11 @@ Tenants represents the teams of a GitHub organization.
 ## api
 
 #### `GET`
-> **important:** for authenticated access you need to provide the `Authorization` header with the `Bearer` token. Or you can provide it in the POST request in the following format `{"token": "<jwt token>"}`. **Note:** this will only work if `FRONTENDAUTH_ENABLED` is set to `true` in the env variables. If not set it will look for the cookie `tenant-api-token` on the same webpage in the dedicated local storage.
+> **important:** for authenticated access you need to provide the `Authorization` header with the `Bearer` token.
 
-You can add `<tenant name>` in front of the path to get the tenant specific data. 
+You can add `<tenant name>` in front of the path to get the tenant specific data (of everything). 
 > e.g. `/api/v1/<tenant name>/pods`
 #### auth
-> enabled when `FRONTENDAUTH_ENABLED` is `false`
-
 `/login/github` - Login with GitHub \
 `/login/github/callback` - Callback after GitHub login \
 `/logout` - Logout
@@ -44,8 +42,6 @@ You can add `<tenant name>` in front of the path to get the tenant specific data
 #### `POST`
 
 ##### auth
-> enabled when `FRONTENDAUTH_ENABLED` is `true`
-
 You can send the github code with json body `{"github_code": "..."}` to the `/login/github` endpoint.
 > The code you need to generate must have the `read:org` scope.
 
@@ -53,8 +49,6 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 
 ### GitHub
 > There are two ways for authenticating with GitHub. You can authenticate without a dashboard, so the github callback url is not the same as the dashboard.
-
-`FRONTENDAUTH_ENABLED` - Disable callback github login function. Default: `false`
 
 `CLIENT_ID` - GitHub client id **required** \
 `CLIENT_SECRET` - GitHub client secret **required** \

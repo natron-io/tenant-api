@@ -10,12 +10,12 @@ import (
 )
 
 var (
-	CLIENT_ID            string
-	CLIENT_SECRET        string
-	letters              = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	SECRET_KEY           string
-	CALLBACK_URL         string
-	FRONTENDAUTH_ENABLED bool
+	CLIENT_ID     string
+	CLIENT_SECRET string
+	letters       = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	SECRET_KEY    string
+	CALLBACK_URL  string
+	DEBUG         bool
 )
 
 func GetGithubAccessToken(code string) string {
