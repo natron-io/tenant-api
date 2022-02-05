@@ -91,8 +91,8 @@ func LoggedIn(c *fiber.Ctx, githubData string) error {
 		})
 	}
 
-	// expire token in 1 hour
-	exp := time.Now().Add(time.Hour).Unix()
+	// expire token in 1 day
+	exp := time.Now().Add(time.Hour * 24).Unix()
 
 	claims := jwt.MapClaims{
 		"github_team_slugs": githubTeamSlugs,
