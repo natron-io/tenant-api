@@ -23,8 +23,7 @@ You can add `<tenant name>` in front of the path to get the tenant specific data
 > e.g. `/api/v1/<tenant name>/pods`
 #### auth
 `/login/github` - Login with GitHub \
-`/login/github/callback` - Callback after GitHub login \
-`/logout` - Logout
+`/login/github/callback` - Callback after GitHub login
 
 ##### general tenant resources
 `/api/v1/pods` - Get pods of a tenant \

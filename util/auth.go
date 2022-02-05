@@ -18,6 +18,7 @@ var (
 	DEBUG         bool
 )
 
+// GetGithubAccessToken returns a github access token
 func GetGithubAccessToken(code string) string {
 	requestBodyMap := map[string]string{"client_id": CLIENT_ID, "client_secret": CLIENT_SECRET, "code": code}
 	requestJSON, _ := json.Marshal(requestBodyMap)
@@ -51,6 +52,7 @@ func GetGithubAccessToken(code string) string {
 	return githubAccessTokenResponse.AccessToken
 }
 
+// GetGithubData returns the github data
 func GetGithubData(accessToken string) string {
 	req, reqerr := http.NewRequest("GET", "https://api.github.com/user", nil)
 	if reqerr != nil {
@@ -70,6 +72,7 @@ func GetGithubData(accessToken string) string {
 	return string(respbody)
 }
 
+// GetGithubTeams returns the github teams
 func GetGithubTeams(accessToken string) string {
 	req, reqerr := http.NewRequest("GET", "https://api.github.com/orgs/natron-io/teams", nil)
 	if reqerr != nil {
@@ -89,6 +92,7 @@ func GetGithubTeams(accessToken string) string {
 	return string(respbody)
 }
 
+// RandomStringBytes returns a random string of length n
 func RandomStringBytes(n int) string {
 	b := make([]rune, n)
 	for i := range b {

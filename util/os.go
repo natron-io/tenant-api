@@ -11,6 +11,7 @@ var (
 	err error
 )
 
+// LoadEnv loads OS environment variables
 func LoadEnv() error {
 	if CLIENT_ID = os.Getenv("CLIENT_ID"); CLIENT_ID == "" {
 		err = errors.New("CLIENT_ID is not set")

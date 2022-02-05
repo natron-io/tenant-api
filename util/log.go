@@ -12,6 +12,7 @@ var (
 	Status        string
 )
 
+// InitLoggers initializes the loggers
 func InitLoggers() {
 	// Convenience logger for warning, info and error messages
 	InfoLogger = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
@@ -19,6 +20,7 @@ func InitLoggers() {
 	ErrorLogger = log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
+// GetStatus returns the status of the application startup
 func GetStatus() string {
 	return Status
 }

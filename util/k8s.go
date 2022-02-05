@@ -14,6 +14,7 @@ var (
 	DISCOUNT_LABEL string
 )
 
+// GetPodsByTenant returns a map of pods for each tenant
 func GetPodsByTenant(tenants []string) (map[string][]string, error) {
 	tenantPods := make(map[string][]string)
 	for _, tenant := range tenants {
@@ -45,6 +46,7 @@ func GetPodsByTenant(tenants []string) (map[string][]string, error) {
 	return tenantPods, nil
 }
 
+// GetNamespacesByTenant returns a map of namespaces for each tenant
 func GetNamespacesByTenant(tenants []string) (map[string][]string, error) {
 	tenantNamespaces := make(map[string][]string)
 	for _, tenant := range tenants {
@@ -65,6 +67,7 @@ func GetNamespacesByTenant(tenants []string) (map[string][]string, error) {
 	return tenantNamespaces, nil
 }
 
+// GetServiceAccountsByTenant returns a map of service accounts for each tenant
 func GetServiceAccountsByTenant(tenants []string) (map[string]map[string][]string, error) {
 	tenantServiceAccounts := make(map[string]map[string][]string)
 	for _, tenant := range tenants {
@@ -96,6 +99,7 @@ func GetServiceAccountsByTenant(tenants []string) (map[string]map[string][]strin
 	return tenantServiceAccounts, nil
 }
 
+// GetCPURequestsSumByTenant returns the sum of CPU requests for each tenant
 func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 	tenantCPURequests := make(map[string]int64)
 	for _, tenant := range tenants {
@@ -141,6 +145,7 @@ func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 	return tenantCPURequests, nil
 }
 
+// GetMemoryRequestsSumByTenant returns the sum of memory requests for each tenant
 func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 	tenantMemoryRequests := make(map[string]int64)
 	for _, tenant := range tenants {
@@ -185,6 +190,7 @@ func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 	return tenantMemoryRequests, nil
 }
 
+// GetStorageRequestsSumByTenant returns the sum of storage requests for each tenant
 func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int64, error) {
 	tenantPVCs := make(map[string]map[string]int64)
 	for _, tenant := range tenants {
@@ -233,6 +239,7 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 	return tenantPVCs, nil
 }
 
+// GetIngressRequestsSumByTenant returns the sum of ingress requests for each tenant
 func GetIngressRequestsSumByTenant(tenants []string) (map[string][]string, error) {
 	tenantsIngress := make(map[string][]string)
 

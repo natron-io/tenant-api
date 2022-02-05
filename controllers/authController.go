@@ -11,6 +11,7 @@ import (
 	"github.com/natron-io/tenant-api/util"
 )
 
+// GetGithubTeams returns the redirect url
 func GithubLogin(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -21,6 +22,7 @@ func GithubLogin(c *fiber.Ctx) error {
 	return c.Redirect(redirectURL)
 }
 
+// FrontendGithubLogin gets the github data and sends it to LoggedIn()
 func FrontendGithubLogin(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -41,12 +43,7 @@ func FrontendGithubLogin(c *fiber.Ctx) error {
 			"message": "Invalid request body",
 		})
 	} else {
-		// util.InfoLogger.Printf("Received code: %s", accessToken)
-
 		githubAccessToken := util.GetGithubAccessToken(githubCode)
-
-		// util.InfoLogger.Printf("Received github data: %s", githubData)
-
 		githubData := util.GetGithubTeams(githubAccessToken)
 
 		return LoggedIn(c, githubData)
@@ -54,6 +51,7 @@ func FrontendGithubLogin(c *fiber.Ctx) error {
 
 }
 
+// GithubCallback handles the callback with the code query param
 func GithubCallback(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -61,19 +59,13 @@ func GithubCallback(c *fiber.Ctx) error {
 	// get code from "code" query param
 	code := c.Query("code")
 
-	// util.InfoLogger.Printf("Received code: %s", code)
-
 	githubAccessToken := util.GetGithubAccessToken(code)
-
-	// util.InfoLogger.Printf("Received access token: %s", githubAccessToken)
-
 	githubData := util.GetGithubTeams(githubAccessToken)
-
-	// util.InfoLogger.Printf("Received github data: %s", githubData)
 
 	return LoggedIn(c, githubData)
 }
 
+// LoggedIn handles the login and returns the token
 func LoggedIn(c *fiber.Ctx, githubData string) error {
 	if githubData == "" {
 		// return unauthorized
@@ -115,6 +107,7 @@ func LoggedIn(c *fiber.Ctx, githubData string) error {
 	})
 }
 
+// CheckAuth checks if the token is valid and returns the github team slugs
 func CheckAuth(c *fiber.Ctx) []string {
 	var token *jwt.Token
 	var tokenString string
@@ -173,19 +166,4 @@ func CheckAuth(c *fiber.Ctx) []string {
 	}
 
 	return githubTeamSlugs
-}
-
-func Logout(c *fiber.Ctx) error {
-	cookie := &fiber.Cookie{
-		Name:     "tenant-api-token",
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		HTTPOnly: true,
-	}
-
-	c.Cookie(cookie)
-
-	return c.JSON(fiber.Map{
-		"message": "Logged out",
-	})
 }

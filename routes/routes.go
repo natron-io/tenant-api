@@ -6,11 +6,11 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// Routes - Define all routes
 func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 	// Auth
 	app.Post("/login/github", controllers.FrontendGithubLogin)
 	app.Get("/login/github", controllers.GithubLogin)
-	app.Get("/logout", controllers.Logout)
 	app.Get("/login/github/callback", controllers.GithubCallback)
 
 	// API

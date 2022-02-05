@@ -5,6 +5,7 @@ import (
 	"github.com/natron-io/tenant-api/util"
 )
 
+// GetCPUCostSum returns the cpu cost sum per tenant
 func GetCPUCostSum(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -45,6 +46,7 @@ func GetCPUCostSum(c *fiber.Ctx) error {
 	}
 }
 
+// GetMemoryCostSum returns the memory cost sum per tenant
 func GetMemoryCostSum(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -85,6 +87,7 @@ func GetMemoryCostSum(c *fiber.Ctx) error {
 	}
 }
 
+// GetStorageCostSum returns the storage cost sum per tenant
 func GetStorageCostSum(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -141,6 +144,7 @@ func GetStorageCostSum(c *fiber.Ctx) error {
 	}
 }
 
+// GetIngressCostSum returns the ingress cost sum per tenant
 func GetIngressCostSum(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())

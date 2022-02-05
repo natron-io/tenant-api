@@ -5,6 +5,7 @@ import (
 	"github.com/natron-io/tenant-api/util"
 )
 
+// GetTenants returns all tenants by authentication
 func GetTenants(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -19,6 +20,7 @@ func GetTenants(c *fiber.Ctx) error {
 	return c.JSON(tenants)
 }
 
+// GetPods returns all pods by authenticated users tenants
 func GetPods(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -59,6 +61,7 @@ func GetPods(c *fiber.Ctx) error {
 	}
 }
 
+// GetNamespaces returns all namespaces by authenticated users tenants
 func GetNamespaces(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -99,6 +102,7 @@ func GetNamespaces(c *fiber.Ctx) error {
 	}
 }
 
+// GetServiceAccounts returns all service accounts by authenticated users tenants with namespaces
 func GetServiceAccounts(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -139,7 +143,7 @@ func GetServiceAccounts(c *fiber.Ctx) error {
 	}
 }
 
-// get cpu request sum by tenant in millicores
+// GetCPURequestsSum returns the sum of all cpu requests by authenticated users tenants
 func GetCPURequestsSum(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -172,7 +176,7 @@ func GetCPURequestsSum(c *fiber.Ctx) error {
 	}
 }
 
-// get memory request sum by tenant in bytes
+// GetMemoryRequestsSum returns the sum of all memory requests by authenticated users tenants
 func GetMemoryRequestsSum(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -205,7 +209,7 @@ func GetMemoryRequestsSum(c *fiber.Ctx) error {
 	}
 }
 
-// returns the sum in bytes of storagerequests by storageclass per tenant
+// GetStorageRequestsSum returns the sum of all storage requests by authenticated users tenants
 func GetStorageRequestsSum(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
@@ -238,6 +242,7 @@ func GetStorageRequestsSum(c *fiber.Ctx) error {
 	}
 }
 
+// GetIngressRequestsSum returns the sum of all ingress requests by authenticated users tenants
 func GetIngressRequestsSum(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
