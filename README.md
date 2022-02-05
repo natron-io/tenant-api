@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/tenant-api-screenshot.png" />
+</p>
+
 # tenant-api
 [![CodeFactor](https://www.codefactor.io/repository/github/natron-io/tenant-api/badge)](https://www.codefactor.io/repository/github/natron-io/tenant-api)
 ![Build Status](https://github.com/natron-io/tenant-api/workflows/CI/badge.svg) 
