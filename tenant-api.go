@@ -68,6 +68,7 @@ func main() {
 	app.Use(cors.New(cors.Config{
 		AllowMethods:     "GET",
 		AllowCredentials: true,
+		AllowOrigins:     util.CORS,
 	}))
 
 	app.Static("/styles", "./static/styles")

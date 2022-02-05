@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	err error
+	err  error
+	CORS string
 )
 
 // LoadEnv loads OS environment variables
@@ -33,6 +34,14 @@ func LoadEnv() error {
 		InfoLogger.Printf("CALLBACK_URL set using default: %s", CALLBACK_URL)
 	} else {
 		InfoLogger.Printf("CALLBACK_URL set using env: %s", CALLBACK_URL)
+	}
+
+	if CORS = os.Getenv("CORS"); CORS == "" {
+		WarningLogger.Println("CORS is not set")
+		CORS = "*"
+		InfoLogger.Printf("CORS set using default: %s", CORS)
+	} else {
+		InfoLogger.Printf("CORS set using env: %s", CORS)
 	}
 
 	if SECRET_KEY = os.Getenv("SECRET_KEY"); SECRET_KEY == "" {
