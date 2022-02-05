@@ -26,41 +26,28 @@ func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 	// Tenants
 	v1.Get("/tenants", controllers.GetTenants)
 
-	// Every Tenant
-	v1.Get("/pods", controllers.GetPods)
-	v1.Get("/namespaces", controllers.GetNamespaces)
-	v1.Get("/serviceAccounts", controllers.GetServiceAccounts)
-
 	// Specific Tenant
 	v1.Get(":tenant/pods", controllers.GetPods)
 	v1.Get(":tenant/namespaces", controllers.GetNamespaces)
 	v1.Get(":tenant/serviceAccounts", controllers.GetServiceAccounts)
 
-	// Every Tenant
-	requests := v1.Group("/requests")
-	requests.Get("/cpu", controllers.GetCPURequestsSum)
-	requests.Get("/memory", controllers.GetMemoryRequestsSum)
-	requests.Get("/storage", controllers.GetStorageRequestsSum)
-	requests.Get("/ingress", controllers.GetIngressRequestsSum)
-
 	// Specific Tenant
-	requests = v1.Group(":tenant/requests")
+	requests := v1.Group(":tenant/requests")
 	requests.Get("/cpu", controllers.GetCPURequestsSum)
 	requests.Get("/memory", controllers.GetMemoryRequestsSum)
 	requests.Get("/storage", controllers.GetStorageRequestsSum)
 	requests.Get("/ingress", controllers.GetIngressRequestsSum)
-
-	// Every Tenant
-	costs := v1.Group("/costs")
-	costs.Get("/cpu", controllers.GetCPUCostSum)
-	costs.Get("/memory", controllers.GetMemoryCostSum)
-	costs.Get("/storage", controllers.GetStorageCostSum)
-	costs.Get("/ingress", controllers.GetIngressCostSum)
 
 	// Per tenant
-	costs = v1.Group(":tenant/costs")
+	costs := v1.Group(":tenant/costs")
 	costs.Get("/cpu", controllers.GetCPUCostSum)
 	costs.Get("/memory", controllers.GetMemoryCostSum)
 	costs.Get("/storage", controllers.GetStorageCostSum)
 	costs.Get("/ingress", controllers.GetIngressCostSum)
+
+	// Quotas
+	quotas := v1.Group(":tenant/quotas")
+	quotas.Get("/cpu", controllers.GetCPUQuota)
+	quotas.Get("/memory", controllers.GetMemoryQuota)
+	quotas.Get("/storage", controllers.GetStorageQuota)
 }

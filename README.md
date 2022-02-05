@@ -19,8 +19,8 @@ Tenants represents the teams of a GitHub organization.
 #### `GET`
 > **important:** for authenticated access you need to provide the `Authorization` header with the `Bearer` token.
 
-You can add `<tenant name>` in front of the path to get the tenant specific data (of everything). 
-> e.g. `/api/v1/<tenant name>/pods`
+You can add `<tenant>` in front of the path to get the tenant specific data (of everything). 
+> e.g. `/api/v1/<tenant>/pods`
 #### auth
 `/login/github` - Login with GitHub \
 `/login/github/callback` - Callback after GitHub login
@@ -29,21 +29,27 @@ You can add `<tenant name>` in front of the path to get the tenant specific data
 `/api/v1/notifications` - Get the Slack notification messages of the broadcast channel provided via envs
 
 ##### general tenant resources
-`/api/v1/pods` - Get pods of a tenant \
-`/api/v1/namespaces` - Get namespaces of a tenant \
-`/api/v1/serviceaccounts` - Get serviceaccounts of a tenant by namespaces \
+`/api/v1/<tenant>/pods` - Get pods of a tenant \
+`/api/v1/<tenant>/namespaces` - Get namespaces of a tenant \
+`/api/v1/<tenant>/serviceaccounts` - Get serviceaccounts of a tenant by namespaces \
 
 ##### specific tenant resources
-`/api/v1/requests/cpu` - Get cpurequests in **Milicores** of a tenant \
-`/api/v1/requests/memory` - Get memoryrequests in **Bytes** of a tenant \
-`/api/v1/requests/storage` - Get storagerequests in **Bytes** of a tenant by storageclass \
-`/api/v1/requests/ingress` - Get ingress ressources total of a tenant by ingressclass
+`/api/v1/<tenant>/requests/cpu` - Get cpurequests in **Milicores** of a tenant \
+`/api/v1/<tenant>/requests/memory` - Get memoryrequests in **Bytes** of a tenant \
+`/api/v1/<tenant>/requests/storage` - Get storagerequests in **Bytes** of a tenant by storageclass \
+`/api/v1/<tenant>/requests/ingress` - Get ingress resourcess total of a tenant by ingressclass
 
-##### tenant ressource costs
-`/api/v1/costs/cpu` - Get the cpu costs by CPU \
-`/api/v1/costs/memory` - Get the memory costs by Memory \
-`/api/v1/costs/storage` - Get the storage costs by StorageClass \
-`/api/v1/costs/ingress` - Get the ingress costs by tenant
+##### tenant resources costs
+`/api/v1/<tenant>/costs/cpu` - Get the CPU costs by CPU \
+`/api/v1/<tenant>/costs/memory` - Get the memory costs by Memory \
+`/api/v1/<tenant>/costs/storage` - Get the storage costs by StorageClass \
+`/api/v1/<tenant>/costs/ingress` - Get the ingress costs by tenant
+
+##### tenant resource quotas
+`/api/v1/<tenant>/quotas/cpu` - Get the CPU resource Quota by the label defined via env \
+`/api/v1/<tenant>/quotas/memory` - Get the memory resource Quota by the label defined via env \
+`/api/v1/<tenant>/quotas/storage` - Get the storage resource Quota for each storage class by the label**s** defined via env 
+
 
 #### `POST`
 
@@ -67,18 +73,24 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 `SECRET_KEY` - JWT secret key *optional* (default: random 32 bytes, displayed in the logs)
 
 ### notifications
-`SLACK_TOKEN` - Tenant API Slack Application User Token (if not set, the notification REST route will be deactivated) \
-`SLACK_BROADCAST_CHANNEL_ID` - BroadCast Slack Channel ID
+`SLACK_TOKEN` - Tenant API Slack Application User Token *optional* (if not set, the notification REST route will be deactivated) \
+`SLACK_BROADCAST_CHANNEL_ID` - BroadCast Slack Channel ID *optional* (**required** if SLACK_TOKEN is set)
 
-### tenant ressource identifiers
-`TENANT_LABEL` - label key for selecting tenant ressources *optional* (default: "natron.io/tenant")
+### tenant resources identifiers
+`TENANT_LABEL` - label key for selecting tenant resourcess *optional* (default: "natron.io/tenant")
 
 ### cost calculation values
 `DISCOUNT_LABEL` - label key for selecting the discount value *optional* (default: "natron.io/discount" (float -> e.g. "0.1")) \
-`CPU_COST` - Cost of a cpu in your currency *optional* (default: 1.00 for 1 CPU) \
+`CPU_COST` - Cost of a CPU in your currency *optional* (default: 1.00 for 1 CPU) \
 `MEMORY_COST` - Cost of a memory in your currency *optional* (default: 1.00 for 1 GB) \
-`STORAGE_COST_<storageclass name>` - Cost of your storage classes in your currency *optional, multiple allowed* (default: 1.00 for 1 GB) \
+`STORAGE_COST_<storageclass name>` - Cost of your storage classes in your currency **required, multiple allowed** (default: 1.00 for 1 GB) \
 `INGRESS_COST` - Cost of ingress in your currency *optional* (default: 1.00 for 1 ingress)
+
+### resource quotas
+`QUOTA_NAMESPACE_SUFFIX` - The namespace suffix where the config of the tenant configuration takes place *optional* (default: "config" e.g. namespace name: "tenant-config") \
+`QUOTA_CPU_LABEL` - The CPU quota label *optional* (default: "natron.io/cpu-quota") \
+`QUOTA_MEMORY_LABEL` - The memory quota label *optional* (default: "natron.io/memory-quota")
+`QUOTA_STORAGE_LABEl_<storageclass name>` - The storage label of each storage class *optional, multiple allowed* (default: "natron.io/storage-quota-<storageclass name>" renders every storageclass defined in the Storage)
 
 ## deployment
 *example deployment files:* [kubernetes manifests](docs/kubernetes)

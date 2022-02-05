@@ -94,6 +94,7 @@ func LoadEnv() error {
 	}
 
 	// get every env variable starting with STORAGE_COST_ and parse it to STORAGE_COST with the storage class name after STORAGE_COST_ as key
+	storageClasses := []string{}
 	tempStorageCost := make(map[string]map[string]float64)
 	for _, env := range os.Environ() {
 		if strings.HasPrefix(env, "STORAGE_COST_") {
@@ -112,6 +113,7 @@ func LoadEnv() error {
 			// add to tempStorageCost
 			tempStorageCost[key[2]] = map[string]float64{"cost": value}
 			InfoLogger.Printf("storage class %s set to cost value: %f", key[2], value)
+			storageClasses = append(storageClasses, key[2])
 		}
 	}
 	STORAGE_COST = tempStorageCost
@@ -130,6 +132,65 @@ func LoadEnv() error {
 		InfoLogger.Printf("INGRESS_COST set using default: %f", INGRESS_COST)
 	} else {
 		InfoLogger.Printf("INGRESS_COST set to: %f", INGRESS_COST)
+	}
+
+	if QUOTA_CPU_LABEL = os.Getenv("QUOTA_CPU_LABEL"); QUOTA_CPU_LABEL == "" {
+		WarningLogger.Println("QUOTA_CPU_LABEL is not set")
+		QUOTA_CPU_LABEL = "natron.io/cpu-quota"
+		InfoLogger.Printf("QUOTA_CPU_LABEL set using default: %s", QUOTA_CPU_LABEL)
+	} else {
+		InfoLogger.Printf("QUOTA_CPU_LABEL set using env: %s", QUOTA_CPU_LABEL)
+	}
+
+	if QUOTA_MEMORY_LABEL = os.Getenv("QUOTA_MEMORY_LABEL"); QUOTA_MEMORY_LABEL == "" {
+		WarningLogger.Println("QUOTA_MEMORY_LABEL is not set")
+		QUOTA_MEMORY_LABEL = "natron.io/memory-quota"
+		InfoLogger.Printf("QUOTA_MEMORY_LABEL set using default: %s", QUOTA_MEMORY_LABEL)
+	} else {
+		InfoLogger.Printf("QUOTA_MEMORY_LABEL set using env: %s", QUOTA_MEMORY_LABEL)
+	}
+
+	if QUOTA_NAMESPACE_SUFFIX = os.Getenv("QUOTA_NAMESPACE_SUFFIX"); QUOTA_NAMESPACE_SUFFIX == "" {
+		WarningLogger.Println("QUOTA_NAMESPACE_SUFFIX is not set")
+		QUOTA_NAMESPACE_SUFFIX = "config"
+		InfoLogger.Printf("QUOTA_NAMESPACE_SUFFIX set using default: %s", QUOTA_NAMESPACE_SUFFIX)
+	} else {
+		InfoLogger.Printf("QUOTA_NAMESPACE_SUFFIX set using env: %s", QUOTA_NAMESPACE_SUFFIX)
+	}
+
+	// for each storageclass get the quota label
+	QUOTA_STORAGE_LABEL = make(map[string]string)
+	// get storage class names from env
+	for _, env := range os.Environ() {
+		if strings.HasPrefix(env, "QUOTA_STORAGE_LABEL_") {
+			// split env variable to key and value
+			keyValue := strings.Split(env, "=")
+			// split key to storage class name and cost
+			key := strings.Split(keyValue[0], "_")
+			// add to tempStorageCost
+
+			// check if storage class already exists in storageClasses
+			for _, storageClass := range storageClasses {
+				if storageClass == key[3] {
+					break
+				}
+			}
+			storageClasses = append(storageClasses, key[3])
+		}
+	}
+
+	for _, storageClass := range storageClasses {
+		label := os.Getenv("QUOTA_STORAGE_LABEL_" + storageClass)
+		if label == "" {
+			WarningLogger.Printf("QUOTA_STORAGE_LABEL_%s is not set", storageClass)
+			label = "natron.io/storage-quota-" + storageClass
+			InfoLogger.Printf("QUOTA_STORAGE_LABEL_%s set using default: %s", storageClass, label)
+			// add to QUOTA_STORAGE_LABEL
+			QUOTA_STORAGE_LABEL[storageClass] = label
+		} else {
+			InfoLogger.Printf("QUOTA_STORAGE_LABEL_%s set using env: %s", storageClass, label)
+			QUOTA_STORAGE_LABEL[storageClass] = label
+		}
 	}
 
 	return nil
