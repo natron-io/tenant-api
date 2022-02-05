@@ -50,6 +50,9 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 
 ## env
 
+### general
+`CORS` - CORS middleware for Fiber that that can be used to enable Cross-Origin Resource Sharing with various options. (e.g. "https://example.com, https://example2.com")
+
 ### GitHub
 > There are two ways for authenticating with GitHub. You can authenticate without a dashboard, so the github callback url is not the same as the dashboard.
 
