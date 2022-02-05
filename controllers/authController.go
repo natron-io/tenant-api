@@ -128,11 +128,8 @@ func CheckAuth(c *fiber.Ctx) []string {
 		return nil
 	}
 
+	// parse token with secret key
 	token, _ = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		_, ok := token.Method.(*jwt.SigningMethodHMAC)
-		if !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
 		return []byte(util.SECRET_KEY), nil
 	})
 
@@ -163,6 +160,11 @@ func CheckAuth(c *fiber.Ctx) []string {
 	var githubTeamSlugs []string
 	for _, githubTeam := range claims["github_team_slugs"].([]interface{}) {
 		githubTeamSlugs = append(githubTeamSlugs, githubTeam.(string))
+	}
+
+	if githubTeamSlugs == nil {
+		util.WarningLogger.Printf("IP %s is not authorized", c.IP())
+		return nil
 	}
 
 	return githubTeamSlugs

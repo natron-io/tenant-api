@@ -24,6 +24,7 @@ import (
 	"github.com/gofiber/template/html"
 	"github.com/natron-io/tenant-api/routes"
 	"github.com/natron-io/tenant-api/util"
+	"github.com/slack-go/slack"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -60,6 +61,10 @@ func init() {
 func main() {
 
 	engine := html.New("./views", ".html")
+
+	if util.SLACK_TOKEN != "" {
+		util.SlackClient = slack.New(util.SLACK_TOKEN)
+	}
 
 	app := fiber.New(fiber.Config{
 		Views: engine,

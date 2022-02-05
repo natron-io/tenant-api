@@ -26,9 +26,8 @@ func GetPods(c *fiber.Ctx) error {
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
 	tenants := CheckAuth(c)
-	util.WarningLogger.Printf("tenant: %s", tenant)
-	if tenants == nil {
-		c.Status(401).JSON(fiber.Map{
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
 	}
@@ -67,9 +66,8 @@ func GetNamespaces(c *fiber.Ctx) error {
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
 	tenants := CheckAuth(c)
-	util.WarningLogger.Printf("tenant: %s", tenant)
-	if tenants == nil {
-		c.Status(401).JSON(fiber.Map{
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
 	}
@@ -108,9 +106,8 @@ func GetServiceAccounts(c *fiber.Ctx) error {
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
 	tenants := CheckAuth(c)
-	util.WarningLogger.Printf("tenant: %s", tenant)
-	if tenants == nil {
-		c.Status(401).JSON(fiber.Map{
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
 	}
@@ -149,9 +146,8 @@ func GetCPURequestsSum(c *fiber.Ctx) error {
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
 	tenants := CheckAuth(c)
-	util.WarningLogger.Printf("tenant: %s", tenant)
-	if tenants == nil {
-		c.Status(401).JSON(fiber.Map{
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
 	}
@@ -182,9 +178,8 @@ func GetMemoryRequestsSum(c *fiber.Ctx) error {
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
 	tenants := CheckAuth(c)
-	util.WarningLogger.Printf("tenant: %s", tenant)
-	if tenants == nil {
-		c.Status(401).JSON(fiber.Map{
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
 	}
@@ -215,9 +210,8 @@ func GetStorageRequestsSum(c *fiber.Ctx) error {
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
 	tenants := CheckAuth(c)
-	util.WarningLogger.Printf("tenant: %s", tenant)
-	if tenants == nil {
-		c.Status(401).JSON(fiber.Map{
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
 	}
@@ -248,9 +242,8 @@ func GetIngressRequestsSum(c *fiber.Ctx) error {
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
 	tenants := CheckAuth(c)
-	util.WarningLogger.Printf("tenant: %s", tenant)
-	if tenants == nil {
-		c.Status(401).JSON(fiber.Map{
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
 	}
