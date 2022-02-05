@@ -20,15 +20,11 @@
             <a href="https://github.com/natron-io/tenant-dashboard">https://github.com/natron-io/tenant-dashboard</a>
             <p style="background-color: rgb(139, 139, 139);">
                 Status: {{.status}} <br/>
-                Frontend Authentication enabled: {{.frontendAuthEnabled}} <br/>
             </p>
-            <!--if .frontendAuthEnabled is false-->
-            {{if not .frontendAuthEnabled}}
-                <a id="github-button" class="btn btn-block btn-github" href="/login/github">
-                    <img src="../images/GitHub-Mark-Light-32px.png" alt="GitHub logo" />
-                    &nbsp;&nbsp;&nbsp; Sign in with GitHub
-                </a>
-            {{end}}
+            <a id="github-button" class="btn btn-block btn-github" href="/login/github">
+                <img src="../images/GitHub-Mark-Light-32px.png" alt="GitHub logo" />
+                &nbsp;&nbsp;&nbsp; Sign in with GitHub
+            </a>
         </div>
     </body>
 </html>

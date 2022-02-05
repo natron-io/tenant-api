@@ -11,6 +11,7 @@ var (
 	err error
 )
 
+// LoadEnv loads OS environment variables
 func LoadEnv() error {
 	if CLIENT_ID = os.Getenv("CLIENT_ID"); CLIENT_ID == "" {
 		err = errors.New("CLIENT_ID is not set")
@@ -39,14 +40,6 @@ func LoadEnv() error {
 		// setting random key
 		SECRET_KEY = RandomStringBytes(32)
 		InfoLogger.Printf("SECRET_KEY is not set, using random key: %s", SECRET_KEY)
-	}
-
-	if FRONTENDAUTH_ENABLED, err = strconv.ParseBool(os.Getenv("FRONTENDAUTH_ENABLED")); err != nil {
-		WarningLogger.Println("FRONTENDAUTH_ENABLED is not set")
-		FRONTENDAUTH_ENABLED = false
-		InfoLogger.Printf("FRONTENDAUTH_ENABLED set using default: %t", FRONTENDAUTH_ENABLED)
-	} else {
-		InfoLogger.Printf("FRONTENDAUTH_ENABLED set using env: %t", FRONTENDAUTH_ENABLED)
 	}
 
 	if TENANT_LABEL = os.Getenv("TENANT_LABEL"); TENANT_LABEL == "" {
