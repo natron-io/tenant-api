@@ -11,9 +11,8 @@ func GetCPUCostSum(c *fiber.Ctx) error {
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
 	tenants := CheckAuth(c)
-	util.WarningLogger.Printf("tenant: %s", tenant)
-	if tenants == nil {
-		c.Status(401).JSON(fiber.Map{
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
 	}
@@ -52,9 +51,8 @@ func GetMemoryCostSum(c *fiber.Ctx) error {
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
 	tenants := CheckAuth(c)
-	util.WarningLogger.Printf("tenant: %s", tenant)
-	if tenants == nil {
-		c.Status(401).JSON(fiber.Map{
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
 	}
@@ -93,9 +91,8 @@ func GetStorageCostSum(c *fiber.Ctx) error {
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
 	tenants := CheckAuth(c)
-	util.WarningLogger.Printf("tenant: %s", tenant)
-	if tenants == nil {
-		c.Status(401).JSON(fiber.Map{
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
 	}
@@ -150,9 +147,8 @@ func GetIngressCostSum(c *fiber.Ctx) error {
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
 	tenants := CheckAuth(c)
-	util.WarningLogger.Printf("tenant: %s", tenant)
-	if tenants == nil {
-		c.Status(401).JSON(fiber.Map{
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
 	}

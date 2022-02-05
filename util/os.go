@@ -83,6 +83,16 @@ func LoadEnv() error {
 		InfoLogger.Printf("MEMORY_COST set using env: %f", MEMORY_COST)
 	}
 
+	if SLACK_TOKEN = os.Getenv("SLACK_TOKEN"); SLACK_TOKEN == "" {
+		WarningLogger.Println("SLACK_TOKEN is not set")
+		SLACK_TOKEN = ""
+	}
+
+	if BroadCastChannelID = os.Getenv("SLACK_BROADCAST_CHANNEL_ID"); BroadCastChannelID == "" {
+		WarningLogger.Println("SLACK_BROADCAST_CHANNEL_ID is not set")
+		BroadCastChannelID = ""
+	}
+
 	// get every env variable starting with STORAGE_COST_ and parse it to STORAGE_COST with the storage class name after STORAGE_COST_ as key
 	tempStorageCost := make(map[string]map[string]float64)
 	for _, env := range os.Environ() {

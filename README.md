@@ -25,6 +25,9 @@ You can add `<tenant name>` in front of the path to get the tenant specific data
 `/login/github` - Login with GitHub \
 `/login/github/callback` - Callback after GitHub login
 
+#### notifications
+`/api/v1/notifications` - Get the Slack notification messages of the broadcast channel provided via envs
+
 ##### general tenant resources
 `/api/v1/pods` - Get pods of a tenant \
 `/api/v1/namespaces` - Get namespaces of a tenant \
@@ -62,6 +65,10 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 
 ### auth
 `SECRET_KEY` - JWT secret key *optional* (default: random 32 bytes, displayed in the logs)
+
+### notifications
+`SLACK_TOKEN` - Tenant API Slack Application User Token (if not set, the notification REST route will be deactivated) \
+`SLACK_BROADCAST_CHANNEL_ID` - BroadCast Slack Channel ID
 
 ### tenant ressource identifiers
 `TENANT_LABEL` - label key for selecting tenant ressources *optional* (default: "natron.io/tenant")
