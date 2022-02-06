@@ -92,6 +92,14 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 `QUOTA_MEMORY_LABEL` - The memory quota label *optional* (default: "natron.io/memory-quota")
 `QUOTA_STORAGE_LABEl_<storageclass name>` - The storage label of each storage class *optional, multiple allowed* (default: "natron.io/storage-quota-<storageclass name>" renders every storageclass defined in the Storage)
 
+## labels
+
+### resource quotas
+For setting the quota labels on the tenant config namespace, you have to enter the values in the following format:  
+- CPU: `cores` e.g. natron.io/cpu-quota: "1" (-> 1 Core)
+- Memory: `GB` e.g. natron.io/memory-quota: "4" (-> 4GB)
+- Storage: `GB` e.g. natron.io/storage-quota-<storageclass name>: "50" (-> 50GB)
+
 ## deployment
 *example deployment files:* [kubernetes manifests](docs/kubernetes)
 
