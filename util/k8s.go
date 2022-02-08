@@ -49,11 +49,8 @@ func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 			discount := pod.Labels[DISCOUNT_LABEL]
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
-			if err != nil {
+			if err != nil || discountFloat < 0 || discountFloat > 1 {
 				return nil, err
-			}
-			if discountFloat < 0 || discountFloat > 1 {
-				discount = "0"
 			}
 
 			CPU_DISCOUNT_PERCENT = discountFloat
@@ -79,11 +76,8 @@ func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 			discount := pod.Labels[DISCOUNT_LABEL]
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
-			if err != nil {
+			if err != nil || discountFloat < 0 || discountFloat > 1 {
 				return nil, err
-			}
-			if discountFloat < 0 || discountFloat > 1 {
-				discount = "0"
 			}
 
 			MEMORY_DISCOUNT_PERCENT = discountFloat
@@ -111,11 +105,8 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 			discount := pvc.Labels[DISCOUNT_LABEL]
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
-			if err != nil {
+			if err != nil || discountFloat < 0 || discountFloat > 1 {
 				return nil, err
-			}
-			if discountFloat < 0 || discountFloat > 1 {
-				discount = "0"
 			}
 
 			STORAGE_DISCOUNT_PERCENT = discountFloat
@@ -147,11 +138,8 @@ func GetIngressRequestsSumByTenant(tenants []string) (map[string][]string, error
 			discount := ingress.Labels[DISCOUNT_LABEL]
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
-			if err != nil {
+			if err != nil || discountFloat < 0 || discountFloat > 1 {
 				return nil, err
-			}
-			if discountFloat < 0 || discountFloat > 1 {
-				discount = "0"
 			}
 
 			INGRESS_DISCOUNT_PERCENT = discountFloat
