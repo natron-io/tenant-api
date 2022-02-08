@@ -151,24 +151,3 @@ func GetIngressRequestsSumByTenant(tenants []string) (map[string][]string, error
 
 	return tenantsIngress, nil
 }
-
-// GetRessourceQuota returns the resource quota for the given tenant and label set in the config namespace
-func GetRessourceQuota(tenant string, namespace_suffix string, label string) (float64, error) {
-	// get the namespace with tenant-namespace_suffix and get the label value
-	namespace, err := Clientset.CoreV1().Namespaces().Get(context.TODO(), tenant, metav1.GetOptions{})
-	if err != nil {
-		return 0, err
-	}
-
-	// get the cpu quota from the label
-	quota := namespace.Labels[label]
-
-	// convert to float64
-	quotaFloat, err := strconv.ParseFloat(quota, 64)
-	if err != nil || quotaFloat < 0 {
-		WarningLogger.Printf("CPU quota value %s is not valid for pod %s with label %s", quota, namespace.Name, label)
-		return 0, err
-	}
-
-	return quotaFloat, nil
-}

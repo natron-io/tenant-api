@@ -22,12 +22,15 @@ func GetCPUQuota(c *fiber.Ctx) error {
 		})
 	}
 
-	cpuQuota, err := util.GetRessourceQuota(tenant, util.QUOTA_NAMESPACE_SUFFIX, util.QUOTA_CPU_LABEL)
+	quota, err := util.GetRessourceQuota(tenant)
 	if err != nil {
+		util.ErrorLogger.Printf("%s", err)
 		return c.Status(500).JSON(fiber.Map{
 			"message": "Internal Server Error",
 		})
 	}
+
+	cpuQuota := quota.Spec.Hard.Cpu().MilliValue()
 
 	return c.JSON(cpuQuota)
 }
@@ -49,12 +52,15 @@ func GetMemoryQuota(c *fiber.Ctx) error {
 		})
 	}
 
-	memoryQuota, err := util.GetRessourceQuota(tenant, util.QUOTA_NAMESPACE_SUFFIX, util.QUOTA_MEMORY_LABEL)
+	quota, err := util.GetRessourceQuota(tenant)
 	if err != nil {
+		util.ErrorLogger.Printf("%s", err)
 		return c.Status(500).JSON(fiber.Map{
 			"message": "Internal Server Error",
 		})
 	}
+
+	memoryQuota := quota.Spec.Hard.Memory().Value()
 
 	return c.JSON(memoryQuota)
 }
@@ -76,17 +82,20 @@ func GetStorageQuota(c *fiber.Ctx) error {
 		})
 	}
 
-	storageQuota := make(map[string]float64)
-	var err error
+	quota, err := util.GetRessourceQuota(tenant)
 
-	for key, value := range util.QUOTA_STORAGE_LABEL {
-		storageQuota[key], err = util.GetRessourceQuota(tenant, util.QUOTA_NAMESPACE_SUFFIX, value)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{
-				"message": "Internal Server Error",
-			})
-		}
+	if err != nil {
+		util.ErrorLogger.Printf("%s", err)
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Internal Server Error",
+		})
 	}
+
+	storageQuota := quota.Spec.Hard
+
+	// filter out the cpu and memory of the storageQuota
+	storageQuota.Cpu().MilliValue().reset()
+	storageQuota.Memory().Value()
 
 	return c.JSON(storageQuota)
 }
