@@ -113,8 +113,7 @@ func GetStorageQuota(c *fiber.Ctx) error {
 		util.InfoLogger.Printf("%s", storageClass)
 		storageQuotaString := v1.ResourceName(storageClass + ".storageclass.storage.k8s.io/requests.storage")
 		if _, ok := storageQuotaMap[storageQuotaString]; ok {
-			// convert to bytes
-			storageQuotaParsed[storageClass] = storageQuotaMap[storageQuotaString] * 1024 * 1024
+			storageQuotaParsed[storageClass] = storageQuotaMap[storageQuotaString]
 		} else {
 			storageQuotaParsed[storageClass] = 0
 		}
