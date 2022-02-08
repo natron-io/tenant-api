@@ -76,7 +76,11 @@ func LoggedIn(c *fiber.Ctx, githubData string) error {
 
 	// parse responsebody to map array
 	var githubDataMap []map[string]interface{}
-	json.Unmarshal([]byte(githubData), &githubDataMap)
+	if err := json.Unmarshal([]byte(githubData), &githubDataMap); err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Internal server error",
+		})
+	}
 
 	// get each github team slug
 	var githubTeamSlugs []string

@@ -44,7 +44,9 @@ func GetGithubAccessToken(code string) string {
 	}
 
 	var githubAccessTokenResponse GithubAccessTokenResponse
-	json.Unmarshal(respbody, &githubAccessTokenResponse)
+	if err := json.Unmarshal(respbody, &githubAccessTokenResponse); err != nil {
+		ErrorLogger.Printf("Unmarshal failed: %s", err)
+	}
 
 	return githubAccessTokenResponse.AccessToken
 }

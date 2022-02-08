@@ -12,7 +12,7 @@ func GetTenants(c *fiber.Ctx) error {
 
 	tenants := CheckAuth(c)
 	if tenants == nil {
-		c.Status(401).JSON(fiber.Map{
+		return c.Status(401).JSON(fiber.Map{
 			"message": "Unauthorized",
 		})
 	}
