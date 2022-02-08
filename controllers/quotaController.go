@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/natron-io/tenant-api/util"
+	v1 "k8s.io/api/core/v1"
 )
 
 // GetCPUQuota returns the CPU quota of a tenant by the label at the tenant config namespace
@@ -91,11 +92,33 @@ func GetStorageQuota(c *fiber.Ctx) error {
 		})
 	}
 
+	storageClasses, err := util.GetStorageClassesInCluster()
+	if err != nil {
+		util.ErrorLogger.Printf("%s", err)
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Internal Server Error",
+		})
+	}
+
 	storageQuota := quota.Spec.Hard
 
-	// filter out the cpu and memory of the storageQuota
-	storageQuota.Cpu().MilliValue().reset()
-	storageQuota.Memory().Value()
+	// get first element of storageQuota
+	storageQuotaMap := make(map[v1.ResourceName]int64)
+	for key, value := range storageQuota {
+		storageQuotaMap[key] = value.Value()
+	}
 
-	return c.JSON(storageQuota)
+	storageQuotaParsed := make(map[string]int64)
+	for _, storageClass := range storageClasses {
+		util.InfoLogger.Printf("%s", storageClass)
+		storageQuotaString := v1.ResourceName(storageClass + ".storageclass.storage.k8s.io/requests.storage")
+		if _, ok := storageQuotaMap[storageQuotaString]; ok {
+			storageQuotaParsed[storageClass] = storageQuotaMap[storageQuotaString]
+		} else {
+			storageQuotaParsed[storageClass] = 0
+		}
+	}
+
+	// check if storageClass string is in storageQuota
+	return c.JSON(storageQuotaParsed)
 }

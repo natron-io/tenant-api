@@ -11,3 +11,4 @@ spec:
     longhorn-hdd-backup-long.storageclass.storage.k8s.io/requests.storage: 0Gi
     longhorn-ssd-backup.storageclass.storage.k8s.io/requests.storage: 0Gi
     longhorn-ssd-backup-long.storageclass.storage.k8s.io/requests.storage: 50Gi
+    standard.storageclass.storage.k8s.io/requests.storage: 50Gi
