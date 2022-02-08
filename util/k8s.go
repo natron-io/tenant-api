@@ -161,17 +161,14 @@ func GetRessourceQuota(tenant string, namespace_suffix string, label string) (fl
 	}
 
 	// get the cpu quota from the label
-	cpuQuota := namespace.Labels[label]
-	if cpuQuota == "" {
-		cpuQuota = "0"
-	}
+	quota := namespace.Labels[label]
 
 	// convert to float64
-	cpuQuotaFloat, err := strconv.ParseFloat(cpuQuota, 64)
-	if err != nil || cpuQuotaFloat < 0 {
-		WarningLogger.Printf("CPU quota value %s is not valid for pod %s with label %s", cpuQuota, namespace.Name, label)
-		cpuQuota = "0"
+	quotaFloat, err := strconv.ParseFloat(quota, 64)
+	if err != nil || quotaFloat < 0 {
+		WarningLogger.Printf("CPU quota value %s is not valid for pod %s with label %s", quota, namespace.Name, label)
+		return 0, err
 	}
 
-	return cpuQuotaFloat, nil
+	return quotaFloat, nil
 }
