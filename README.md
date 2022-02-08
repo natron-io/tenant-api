@@ -81,7 +81,8 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 
 ### notifications
 `SLACK_TOKEN` - Tenant API Slack Application User Token *optional* (if not set, the notification REST route will be deactivated) \
-`SLACK_BROADCAST_CHANNEL_ID` - BroadCast Slack Channel ID *optional* (**required** if SLACK_TOKEN is set)
+`SLACK_BROADCAST_CHANNEL_ID` - BroadCast Slack Channel ID *optional* (**required** if SLACK_TOKEN is set) \
+`SLACK_URL` - The slack url of your slack Channel *optional* (**required** if SLACK_TOKEN is set, e.g. "https://natronio.slack.com")
 
 ### cost calculation values
 `DISCOUNT_LABEL` - label key for selecting the discount value *optional* (default: "natron.io/discount" (float -> e.g. "0.1")) \
