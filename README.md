@@ -92,11 +92,7 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 `INGRESS_COST` - Cost of ingress in your currency *optional* (default: 1.00 for 1 ingress)
 
 ### resource quotas
-`QUOTA_NAMESPACE_SUFFIX` - The namespace suffix where the config of the tenant configuration takes place *optional* (default: "config" e.g. namespace name: "tenant-config") \
-`QUOTA_CPU_LABEL` - The CPU quota label *optional* (default: "natron.io/cpu-quota") \
-`QUOTA_MEMORY_LABEL` - The memory quota label *optional* (default: "natron.io/memory-quota")
-`QUOTA_STORAGE_LABEl_<storageclass name>` - The storage label of each storage class *optional, multiple allowed* (default: "natron.io/storage-quota-<storageclass name>" renders every storageclass defined in the Storage)
-
+It will get the resource quotas defined in the tenant namespace with the exact name of the tenant.
 ## labels
 
 ### resource quotas

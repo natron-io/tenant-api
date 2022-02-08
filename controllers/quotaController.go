@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/natron-io/tenant-api/util"
+	v1 "k8s.io/api/core/v1"
 )
 
 // GetCPUQuota returns the CPU quota of a tenant by the label at the tenant config namespace
@@ -22,12 +23,15 @@ func GetCPUQuota(c *fiber.Ctx) error {
 		})
 	}
 
-	cpuQuota, err := util.GetRessourceQuota(tenant, util.QUOTA_NAMESPACE_SUFFIX, util.QUOTA_CPU_LABEL)
+	quota, err := util.GetRessourceQuota(tenant)
 	if err != nil {
+		util.ErrorLogger.Printf("%s", err)
 		return c.Status(500).JSON(fiber.Map{
 			"message": "Internal Server Error",
 		})
 	}
+
+	cpuQuota := quota.Spec.Hard.Cpu().MilliValue()
 
 	return c.JSON(cpuQuota)
 }
@@ -49,12 +53,15 @@ func GetMemoryQuota(c *fiber.Ctx) error {
 		})
 	}
 
-	memoryQuota, err := util.GetRessourceQuota(tenant, util.QUOTA_NAMESPACE_SUFFIX, util.QUOTA_MEMORY_LABEL)
+	quota, err := util.GetRessourceQuota(tenant)
 	if err != nil {
+		util.ErrorLogger.Printf("%s", err)
 		return c.Status(500).JSON(fiber.Map{
 			"message": "Internal Server Error",
 		})
 	}
+
+	memoryQuota := quota.Spec.Hard.Memory().Value()
 
 	return c.JSON(memoryQuota)
 }
@@ -76,17 +83,43 @@ func GetStorageQuota(c *fiber.Ctx) error {
 		})
 	}
 
-	storageQuota := make(map[string]float64)
-	var err error
+	quota, err := util.GetRessourceQuota(tenant)
 
-	for key, value := range util.QUOTA_STORAGE_LABEL {
-		storageQuota[key], err = util.GetRessourceQuota(tenant, util.QUOTA_NAMESPACE_SUFFIX, value)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{
-				"message": "Internal Server Error",
-			})
+	if err != nil {
+		util.ErrorLogger.Printf("%s", err)
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Internal Server Error",
+		})
+	}
+
+	storageClasses, err := util.GetStorageClassesInCluster()
+	if err != nil {
+		util.ErrorLogger.Printf("%s", err)
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Internal Server Error",
+		})
+	}
+
+	storageQuota := quota.Spec.Hard
+
+	// get first element of storageQuota
+	storageQuotaMap := make(map[v1.ResourceName]int64)
+	for key, value := range storageQuota {
+		storageQuotaMap[key] = value.Value()
+	}
+
+	storageQuotaParsed := make(map[string]int64)
+	for _, storageClass := range storageClasses {
+		util.InfoLogger.Printf("%s", storageClass)
+		storageQuotaString := v1.ResourceName(storageClass + ".storageclass.storage.k8s.io/requests.storage")
+		if _, ok := storageQuotaMap[storageQuotaString]; ok {
+			// convert to bytes
+			storageQuotaParsed[storageClass] = storageQuotaMap[storageQuotaString] * 1024 * 1024
+		} else {
+			storageQuotaParsed[storageClass] = 0
 		}
 	}
 
-	return c.JSON(storageQuota)
+	// check if storageClass string is in storageQuota
+	return c.JSON(storageQuotaParsed)
 }

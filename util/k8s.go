@@ -3,6 +3,7 @@ package util
 import (
 	"context"
 	"strconv"
+	"strings"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -19,7 +20,7 @@ func GetPodsByTenant(tenants []string) (map[string][]string, error) {
 	// get namespace with same name as tenant and get pods
 	for _, tenant := range tenants {
 		pods, err := Clientset.CoreV1().Pods(tenant).List(context.TODO(), metav1.ListOptions{})
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return nil, err
 		}
 
@@ -39,7 +40,7 @@ func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 	for _, tenant := range tenants {
 		pods, err := Clientset.CoreV1().Pods(tenant).List(context.TODO(), metav1.ListOptions{})
 
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return nil, err
 		}
 
@@ -69,7 +70,7 @@ func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 	tenantMemoryRequests := make(map[string]int64)
 	for _, tenant := range tenants {
 		pods, err := Clientset.CoreV1().Pods(tenant).List(context.TODO(), metav1.ListOptions{})
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return nil, err
 		}
 
@@ -100,7 +101,7 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 	for _, tenant := range tenants {
 		pvcList, err := Clientset.CoreV1().PersistentVolumeClaims(tenant).List(context.TODO(), metav1.ListOptions{})
 
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return nil, err
 		}
 
@@ -138,7 +139,7 @@ func GetIngressRequestsSumByTenant(tenants []string) (map[string][]string, error
 		// get ingress for each namespace in the tenant and add it to the map of ingress for the tenant
 		ingressList, err := Clientset.NetworkingV1().Ingresses(tenant).List(context.TODO(), metav1.ListOptions{})
 
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return nil, err
 		}
 
@@ -164,23 +165,17 @@ func GetIngressRequestsSumByTenant(tenants []string) (map[string][]string, error
 	return tenantsIngress, nil
 }
 
-// GetRessourceQuota returns the resource quota for the given tenant and label set in the config namespace
-func GetRessourceQuota(tenant string, namespace_suffix string, label string) (float64, error) {
-	// get the namespace with tenant-namespace_suffix and get the label value
-	namespace, err := Clientset.CoreV1().Namespaces().Get(context.TODO(), tenant, metav1.GetOptions{})
-	if err != nil {
-		return 0, err
+func GetStorageClassesInCluster() ([]string, error) {
+	storageClasses := make([]string, 0)
+	scList, err := Clientset.StorageV1().StorageClasses().List(context.TODO(), metav1.ListOptions{})
+
+	if err != nil && !strings.Contains(err.Error(), "not found") {
+		return nil, err
 	}
 
-	// get the cpu quota from the label
-	quota := namespace.Labels[label]
-
-	// convert to float64
-	quotaFloat, err := strconv.ParseFloat(quota, 64)
-	if err != nil || quotaFloat < 0 {
-		WarningLogger.Printf("CPU quota value %s is not valid for pod %s with label %s", quota, namespace.Name, label)
-		return 0, err
+	for _, sc := range scList.Items {
+		storageClasses = append(storageClasses, sc.Name)
 	}
 
-	return quotaFloat, nil
+	return storageClasses, nil
 }

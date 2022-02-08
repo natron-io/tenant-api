@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: netrics
+spec:
+  hard:
+    cpu: "10"
+    memory: 20Gi
+    longhorn.storageclass.storage.k8s.io/requests.storage: 0Gi
+    longhorn-hdd-backup.storageclass.storage.k8s.io/requests.storage: 0Gi
+    longhorn-hdd-backup-long.storageclass.storage.k8s.io/requests.storage: 0Gi
+    longhorn-ssd-backup.storageclass.storage.k8s.io/requests.storage: 0Gi
+    longhorn-ssd-backup-long.storageclass.storage.k8s.io/requests.storage: 50Gi
+    standard.storageclass.storage.k8s.io/requests.storage: 50Gi
