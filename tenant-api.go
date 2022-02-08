@@ -102,5 +102,8 @@ func main() {
 
 	util.InfoLogger.Println("Tenant API is running on port 8000")
 
-	app.Listen(":8000")
+	if err := app.Listen(":8000"); err != nil {
+		util.ErrorLogger.Println("Error starting server:", err)
+		os.Exit(1)
+	}
 }

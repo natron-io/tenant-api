@@ -47,14 +47,10 @@ func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 
 			// get DISCOUNT_REQUEST by DISCOUNT_LABEL
 			discount := pod.Labels[DISCOUNT_LABEL]
-			if discount == "" {
-				discount = "0"
-			}
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
 			if err != nil || discountFloat < 0 || discountFloat > 1 {
-				WarningLogger.Printf("Discount value %s is not valid for pod %s with label %s", discount, pod.Name, DISCOUNT_LABEL)
-				discount = "0"
+				return nil, err
 			}
 
 			CPU_DISCOUNT_PERCENT = discountFloat
@@ -78,14 +74,10 @@ func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 
 			// get DISCOUNT_REQUEST by DISCOUNT_LABEL
 			discount := pod.Labels[DISCOUNT_LABEL]
-			if discount == "" {
-				discount = "0"
-			}
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
 			if err != nil || discountFloat < 0 || discountFloat > 1 {
-				WarningLogger.Printf("Discount value %s is not valid for pod %s with label %s", discount, pod.Name, DISCOUNT_LABEL)
-				discount = "0"
+				return nil, err
 			}
 
 			MEMORY_DISCOUNT_PERCENT = discountFloat
@@ -111,14 +103,10 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 		for _, pvc := range pvcList.Items {
 			// get DISCOUNT_REQUEST by DISCOUNT_LABEL
 			discount := pvc.Labels[DISCOUNT_LABEL]
-			if discount == "" {
-				discount = "0"
-			}
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
 			if err != nil || discountFloat < 0 || discountFloat > 1 {
-				WarningLogger.Printf("Discount value %s is not valid for pod %s with label %s", discount, pvc.Name, DISCOUNT_LABEL)
-				discount = "0"
+				return nil, err
 			}
 
 			STORAGE_DISCOUNT_PERCENT = discountFloat
@@ -148,14 +136,10 @@ func GetIngressRequestsSumByTenant(tenants []string) (map[string][]string, error
 		for _, ingress := range ingressList.Items {
 			// get DISCOUNT_REQUEST by DISCOUNT_LABEL
 			discount := ingress.Labels[DISCOUNT_LABEL]
-			if discount == "" {
-				discount = "0"
-			}
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
 			if err != nil || discountFloat < 0 || discountFloat > 1 {
-				WarningLogger.Printf("Discount value %s is not valid for pod %s with label %s", discount, ingress.Name, DISCOUNT_LABEL)
-				discount = "0"
+				return nil, err
 			}
 
 			INGRESS_DISCOUNT_PERCENT = discountFloat
@@ -177,17 +161,14 @@ func GetRessourceQuota(tenant string, namespace_suffix string, label string) (fl
 	}
 
 	// get the cpu quota from the label
-	cpuQuota := namespace.Labels[label]
-	if cpuQuota == "" {
-		cpuQuota = "0"
-	}
+	quota := namespace.Labels[label]
 
 	// convert to float64
-	cpuQuotaFloat, err := strconv.ParseFloat(cpuQuota, 64)
-	if err != nil || cpuQuotaFloat < 0 {
-		WarningLogger.Printf("CPU quota value %s is not valid for pod %s with label %s", cpuQuota, namespace.Name, label)
-		cpuQuota = "0"
+	quotaFloat, err := strconv.ParseFloat(quota, 64)
+	if err != nil || quotaFloat < 0 {
+		WarningLogger.Printf("CPU quota value %s is not valid for pod %s with label %s", quota, namespace.Name, label)
+		return 0, err
 	}
 
-	return cpuQuotaFloat, nil
+	return quotaFloat, nil
 }
