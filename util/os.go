@@ -51,14 +51,6 @@ func LoadEnv() error {
 		InfoLogger.Printf("SECRET_KEY is not set, using random key: %s", SECRET_KEY)
 	}
 
-	if TENANT_LABEL = os.Getenv("TENANT_LABEL"); TENANT_LABEL == "" {
-		WarningLogger.Println("TENANT_LABEL is not set")
-		TENANT_LABEL = "natron.io/tenant"
-		InfoLogger.Printf("TENANT_LABEL set using default: %s", TENANT_LABEL)
-	} else {
-		InfoLogger.Printf("TENANT_LABEL set using env: %s", TENANT_LABEL)
-	}
-
 	if DISCOUNT_LABEL = os.Getenv("DISCOUNT_LABEL"); DISCOUNT_LABEL == "" {
 		WarningLogger.Println("DISCOUNT_LABEL is not set")
 		DISCOUNT_LABEL = "natron.io/discount"
