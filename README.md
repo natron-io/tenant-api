@@ -11,8 +11,13 @@
 ![open issues](https://img.shields.io/github/issues-raw/natron-io/tenant-api)
 ![license](https://img.shields.io/github/license/natron-io/tenant-api)
 
-API to present data to the [tenant-dashboard](https://github.com/natron-io/tenant-dashboard) with a GitHub oauth login.
-Tenants represents the teams of a GitHub organization.
+API to present data to the [tenant-dashboard](https://github.com/natron-io/tenant-dashboard) with a GitHub oauth login.  
+**Tenants** represents the **teams** of a GitHub organization.  
+
+## how it works
+The tenant-api will search for namespaces named like the github teams, which you have access in your GitHub organisation.  
+It is recommended to use a multitenancy tool to jail each tenant in its host-Cluster namespace. For this you can use the [vclusters](https://vlcuster.com) technology. So you can deploy for each tenant a hostcluster namespace (named like your GitHub team) and in this namespace you can deploy the vcluster (which is the tenant). The vcluster will sync all resources created in it only on the hostcluster namespace. So the tenant-api only have to search the low level / costly resources (like pods, pvcs, ingress, requests, etc.) to present the data to the dashboard. 
+You can also sync your slack broadcast channel to present some important informations about your infrastructure to your tenant.
 
 ## api
 
