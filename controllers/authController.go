@@ -128,10 +128,19 @@ func CheckAuth(c *fiber.Ctx) []string {
 		return nil
 	}
 
+	var err error
 	// parse token with secret key
-	token, _ = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(util.SECRET_KEY), nil
 	})
+
+	if err != nil {
+		return nil
+	}
+
+	if token == nil {
+		return nil
+	}
 
 	// validate expiration
 	if !token.Valid {
