@@ -28,8 +28,6 @@ func GetGithubAccessToken(code string) string {
 		ErrorLogger.Printf("Request creation failed: %s", reqerr)
 	}
 
-	InfoLogger.Printf("Request body: %s", requestJSON)
-
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
