@@ -86,11 +86,24 @@ func LoadEnv() error {
 	if SLACK_TOKEN = os.Getenv("SLACK_TOKEN"); SLACK_TOKEN == "" {
 		WarningLogger.Println("SLACK_TOKEN is not set")
 		SLACK_TOKEN = ""
+	} else {
+		InfoLogger.Printf("SLACK_TOKEN set using env: %s", SLACK_TOKEN)
 	}
 
-	if BroadCastChannelID = os.Getenv("SLACK_BROADCAST_CHANNEL_ID"); BroadCastChannelID == "" {
-		WarningLogger.Println("SLACK_BROADCAST_CHANNEL_ID is not set")
-		BroadCastChannelID = ""
+	if BroadCastChannelID = os.Getenv("SLACK_BROADCAST_CHANNEL_ID"); BroadCastChannelID == "" && SLACK_TOKEN != "" {
+		ErrorLogger.Println("SLACK_BROADCAST_CHANNEL_ID is not set")
+		Status = "Error: SLACK_BROADCAST_CHANNEL_ID is not set"
+		os.Exit(1)
+	} else {
+		InfoLogger.Printf("SLACK_BROADCAST_CHANNEL_ID set using env: %s", BroadCastChannelID)
+	}
+
+	if SlackURL = os.Getenv("SLACK_URL"); SlackURL == "" && SLACK_TOKEN != "" {
+		ErrorLogger.Println("SLACK_URL is not set")
+		Status = "Error: SLACK_URL is not set"
+		os.Exit(1)
+	} else {
+		InfoLogger.Printf("SLACK_URL set using env: %s", SlackURL)
 	}
 
 	// get every env variable starting with STORAGE_COST_ and parse it to STORAGE_COST with the storage class name after STORAGE_COST_ as key

@@ -10,4 +10,5 @@ var (
 	SLACK_TOKEN        = os.Getenv("SLACK_TOKEN")
 	SlackClient        *slack.Client
 	BroadCastChannelID string
+	SlackURL           string
 )
