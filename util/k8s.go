@@ -40,7 +40,6 @@ func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 		pods, err := Clientset.CoreV1().Pods(tenant).List(context.TODO(), metav1.ListOptions{})
 
 		if err != nil {
-			Status = "Error"
 			return nil, err
 		}
 
@@ -72,7 +71,6 @@ func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 	for _, tenant := range tenants {
 		pods, err := Clientset.CoreV1().Pods(tenant).List(context.TODO(), metav1.ListOptions{})
 		if err != nil {
-			Status = "Error"
 			return nil, err
 		}
 
@@ -105,7 +103,6 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 		pvcList, err := Clientset.CoreV1().PersistentVolumeClaims(tenant).List(context.TODO(), metav1.ListOptions{})
 
 		if err != nil {
-			Status = "Error"
 			return nil, err
 		}
 
@@ -145,7 +142,6 @@ func GetIngressRequestsSumByTenant(tenants []string) (map[string][]string, error
 		ingressList, err := Clientset.NetworkingV1().Ingresses(tenant).List(context.TODO(), metav1.ListOptions{})
 
 		if err != nil {
-			Status = "Error"
 			return nil, err
 		}
 

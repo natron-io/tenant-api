@@ -15,7 +15,6 @@ var (
 	letters       = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	SECRET_KEY    string
 	CALLBACK_URL  string
-	DEBUG         bool
 )
 
 // GetGithubAccessToken returns a github access token

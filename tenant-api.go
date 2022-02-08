@@ -83,9 +83,8 @@ func main() {
 		// set header to html
 		c.Set("Content-Type", "text/html") //TODO render css
 		return c.Render("index", fiber.Map{
-			"title":            "Tenant API",
-			"status":           util.GetStatus(),
-			"debuggingEnabled": util.DEBUG,
+			"title":  "Tenant API",
+			"status": util.GetStatus(),
 		})
 	})
 
