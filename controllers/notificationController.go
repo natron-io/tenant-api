@@ -53,7 +53,7 @@ func GetNotifications(c *fiber.Ctx) error {
 		LinkToMessage string `json:"link_to_message"`
 	}
 
-	notifications := make(map[string]Notification)
+	notifications := []Notification{}
 	for _, message := range responseConversationHistory.Messages {
 		responseUserName, err := util.SlackClient.GetUserInfo(message.User)
 
@@ -64,14 +64,14 @@ func GetNotifications(c *fiber.Ctx) error {
 
 		if message.ClientMsgID != "" {
 			// json map of notifications
-			notifications[message.ClientMsgID] = Notification{
+			notifications = append(notifications, Notification{
 				ClientMsgID:   message.ClientMsgID,
 				Message:       message.Text,
 				UserRealName:  responseUserName.Profile.RealName,
 				UserAvatarURL: responseUserName.Profile.Image192,
 				UnixTimestamp: message.Timestamp,
 				LinkToMessage: util.SlackURL + "/archives/" + util.BroadCastChannelID + "/p" + message.Timestamp,
-			}
+			})
 		}
 	}
 
