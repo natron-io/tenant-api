@@ -31,7 +31,7 @@ func GetNotifications(c *fiber.Ctx) error {
 	}
 
 	// make slack api call to get all notifications of the BroadCast channel
-	resp, err := util.SlackClient.GetConversationHistory(&historyParams)
+	responseConversationHistory, err := util.SlackClient.GetConversationHistory(&historyParams)
 
 	if err != nil {
 		util.ErrorLogger.Printf("%s", err)
@@ -40,11 +40,38 @@ func GetNotifications(c *fiber.Ctx) error {
 		})
 	}
 
-	// parse messages to string slice
-	var notifications []string
-	for _, message := range resp.Messages {
-		if message.Blocks.BlockSet != nil {
-			notifications = append(notifications, message.Text)
+	// get the slack url of the channel
+
+	// create map of notifications with client_msg_id as key and message as value and username
+
+	type Notification struct {
+		ClientMsgID   string `json:"client_msg_id"`
+		Message       string `json:"message"`
+		UserRealName  string `json:"user_real_name"`
+		UserAvatarURL string `json:"user_avatar_url"`
+		UnixTimestamp string `json:"unix_timestamp"`
+		LinkToMessage string `json:"link_to_message"`
+	}
+
+	notifications := make(map[string]Notification)
+	for _, message := range responseConversationHistory.Messages {
+		responseUserName, err := util.SlackClient.GetUserInfo(message.User)
+
+		if err != nil {
+			util.ErrorLogger.Printf("%s", err)
+			continue
+		}
+
+		if message.ClientMsgID != "" {
+			// json map of notifications
+			notifications[message.ClientMsgID] = Notification{
+				ClientMsgID:   message.ClientMsgID,
+				Message:       message.Text,
+				UserRealName:  responseUserName.Profile.RealName,
+				UserAvatarURL: responseUserName.Profile.Image192,
+				UnixTimestamp: message.Timestamp,
+				LinkToMessage: util.SlackURL + "/archives/" + util.BroadCastChannelID + "/p" + message.Timestamp,
+			}
 		}
 	}
 
