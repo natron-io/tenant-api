@@ -77,7 +77,7 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 
 ### api settings
 `CORS` - Define CORS as one string *optional* (default: "*")
-`MAX_REQUESTS` - Define max API requests per 30 Seconds *optional* (default: "20")
+`MAX_REQUESTS` - Define max API requests per 30 Seconds *optional* (default: "100")
 
 ### notifications
 `SLACK_TOKEN` - Tenant API Slack Application User Token *optional* (if not set, the notification REST route will be deactivated) \

@@ -46,7 +46,7 @@ func LoadEnv() error {
 
 	if MAX_REQUESTS, err = strconv.Atoi(os.Getenv("MAX_REQUESTS")); err != nil {
 		WarningLogger.Println("MAX_REQUESTS is not set")
-		MAX_REQUESTS = 20
+		MAX_REQUESTS = 100
 		InfoLogger.Printf("MAX_REQUESTS set using default: %d", MAX_REQUESTS)
 	} else {
 		InfoLogger.Printf("MAX_REQUESTS set using env: %d", MAX_REQUESTS)
