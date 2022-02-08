@@ -28,8 +28,6 @@ func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 
 	// Specific Tenant
 	v1.Get(":tenant/pods", controllers.GetPods)
-	v1.Get(":tenant/namespaces", controllers.GetNamespaces)
-	v1.Get(":tenant/serviceAccounts", controllers.GetServiceAccounts)
 
 	// Specific Tenant
 	requests := v1.Group(":tenant/requests")
