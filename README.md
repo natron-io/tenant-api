@@ -92,7 +92,7 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 `INGRESS_COST` - Cost of ingress in your currency *optional* (default: 1.00 for 1 ingress)
 
 ### resource quotas
-
+It will get the resource quotas defined in the tenant namespace with the exact name of the tenant.
 ## labels
 
 ### resource quotas
