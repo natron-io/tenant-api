@@ -44,6 +44,14 @@ func LoadEnv() error {
 		InfoLogger.Printf("CORS set using env: %s", CORS)
 	}
 
+	if MAX_REQUESTS, err = strconv.Atoi(os.Getenv("MAX_REQUESTS")); err != nil {
+		WarningLogger.Println("MAX_REQUESTS is not set")
+		MAX_REQUESTS = 20
+		InfoLogger.Printf("MAX_REQUESTS set using default: %d", MAX_REQUESTS)
+	} else {
+		InfoLogger.Printf("MAX_REQUESTS set using env: %d", MAX_REQUESTS)
+	}
+
 	if SECRET_KEY = os.Getenv("SECRET_KEY"); SECRET_KEY == "" {
 		WarningLogger.Println("SECRET_KEY is not set")
 		// setting random key

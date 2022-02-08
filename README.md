@@ -75,6 +75,10 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 ### auth
 `SECRET_KEY` - JWT secret key *optional* (default: random 32 bytes, displayed in the logs)
 
+### api settings
+`CORS` - Define CORS as one string *optional* (default: "*")
+`MAX_REQUESTS` - Define max API requests per 30 Seconds *optional* (default: "20")
+
 ### notifications
 `SLACK_TOKEN` - Tenant API Slack Application User Token *optional* (if not set, the notification REST route will be deactivated) \
 `SLACK_BROADCAST_CHANNEL_ID` - BroadCast Slack Channel ID *optional* (**required** if SLACK_TOKEN is set)

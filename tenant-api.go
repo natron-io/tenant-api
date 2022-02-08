@@ -18,9 +18,11 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/template/html"
 	"github.com/natron-io/tenant-api/routes"
 	"github.com/natron-io/tenant-api/util"
@@ -74,6 +76,14 @@ func main() {
 		AllowMethods:     "GET",
 		AllowCredentials: true,
 		AllowOrigins:     util.CORS,
+	}))
+
+	app.Use(limiter.New(limiter.Config{
+		Max:        util.MAX_REQUESTS,
+		Expiration: 30 * time.Second,
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(429).SendString("Too many requests")
+		},
 	}))
 
 	app.Static("/styles", "./static/styles")

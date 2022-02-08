@@ -10,6 +10,7 @@ var (
 	InfoLogger    *log.Logger
 	ErrorLogger   *log.Logger
 	Status        string
+	MAX_REQUESTS  int
 )
 
 // InitLoggers initializes the loggers
