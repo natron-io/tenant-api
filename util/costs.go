@@ -31,7 +31,6 @@ func GetMemoryCost(memory float64) float64 {
 func GetStorageCost(storageClass string, size float64) (float64, error) {
 	// return per GB
 	if STORAGE_COST[storageClass] == nil {
-		Status = "error"
 		return 0, fmt.Errorf("storage class %s not found", storageClass)
 	}
 	// with STORAGE_DISCOUNT_PERCENT

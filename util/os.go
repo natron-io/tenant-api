@@ -17,14 +17,14 @@ func LoadEnv() error {
 	if CLIENT_ID = os.Getenv("CLIENT_ID"); CLIENT_ID == "" {
 		err = errors.New("CLIENT_ID is not set")
 		ErrorLogger.Println(err)
-		Status = "Error"
+		Status = "Error: CLIENT_ID is not set"
 		return err
 	}
 
 	if CLIENT_SECRET = os.Getenv("CLIENT_SECRET"); CLIENT_SECRET == "" {
 		err = errors.New("CLIENT_SECRET is not set")
 		ErrorLogger.Println(err)
-		Status = "Error"
+		Status = "Error: CLIENT_SECRET is not set"
 		return err
 	}
 
@@ -99,7 +99,7 @@ func LoadEnv() error {
 			if err != nil {
 				err = errors.New("STORAGE_COST_" + key[2] + " is not set or invalid float value")
 				ErrorLogger.Println(err)
-				Status = "Error"
+				Status = "Error: " + err.Error()
 				return err
 			}
 			// add to tempStorageCost
