@@ -47,6 +47,9 @@ func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 
 			// get DISCOUNT_REQUEST by DISCOUNT_LABEL
 			discount := pod.Labels[DISCOUNT_LABEL]
+			if discount == "" {
+				discount = "0"
+			}
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
 			if err != nil || discountFloat < 0 || discountFloat > 1 {
@@ -74,6 +77,9 @@ func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 
 			// get DISCOUNT_REQUEST by DISCOUNT_LABEL
 			discount := pod.Labels[DISCOUNT_LABEL]
+			if discount == "" {
+				discount = "0"
+			}
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
 			if err != nil || discountFloat < 0 || discountFloat > 1 {
@@ -103,6 +109,9 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 		for _, pvc := range pvcList.Items {
 			// get DISCOUNT_REQUEST by DISCOUNT_LABEL
 			discount := pvc.Labels[DISCOUNT_LABEL]
+			if discount == "" {
+				discount = "0"
+			}
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
 			if err != nil || discountFloat < 0 || discountFloat > 1 {
@@ -136,6 +145,9 @@ func GetIngressRequestsSumByTenant(tenants []string) (map[string][]string, error
 		for _, ingress := range ingressList.Items {
 			// get DISCOUNT_REQUEST by DISCOUNT_LABEL
 			discount := ingress.Labels[DISCOUNT_LABEL]
+			if discount == "" {
+				discount = "0"
+			}
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
 			if err != nil || discountFloat < 0 || discountFloat > 1 {
