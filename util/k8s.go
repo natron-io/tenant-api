@@ -49,8 +49,10 @@ func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 			discount := pod.Labels[DISCOUNT_LABEL]
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
-			if err != nil || discountFloat < 0 || discountFloat > 1 {
-				WarningLogger.Printf("Discount value %s is not valid for pod %s with label %s", discount, pod.Name, DISCOUNT_LABEL)
+			if err != nil {
+				return nil, err
+			}
+			if discountFloat < 0 || discountFloat > 1 {
 				discount = "0"
 			}
 
@@ -77,8 +79,10 @@ func GetMemoryRequestsSumByTenant(tenants []string) (map[string]int64, error) {
 			discount := pod.Labels[DISCOUNT_LABEL]
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
-			if err != nil || discountFloat < 0 || discountFloat > 1 {
-				WarningLogger.Printf("Discount value %s is not valid for pod %s with label %s", discount, pod.Name, DISCOUNT_LABEL)
+			if err != nil {
+				return nil, err
+			}
+			if discountFloat < 0 || discountFloat > 1 {
 				discount = "0"
 			}
 
@@ -107,8 +111,10 @@ func GetStorageRequestsSumByTenant(tenants []string) (map[string]map[string]int6
 			discount := pvc.Labels[DISCOUNT_LABEL]
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
-			if err != nil || discountFloat < 0 || discountFloat > 1 {
-				WarningLogger.Printf("Discount value %s is not valid for pod %s with label %s", discount, pvc.Name, DISCOUNT_LABEL)
+			if err != nil {
+				return nil, err
+			}
+			if discountFloat < 0 || discountFloat > 1 {
 				discount = "0"
 			}
 
@@ -141,8 +147,10 @@ func GetIngressRequestsSumByTenant(tenants []string) (map[string][]string, error
 			discount := ingress.Labels[DISCOUNT_LABEL]
 			// convert to float64
 			discountFloat, err := strconv.ParseFloat(discount, 64)
-			if err != nil || discountFloat < 0 || discountFloat > 1 {
-				WarningLogger.Printf("Discount value %s is not valid for pod %s with label %s", discount, ingress.Name, DISCOUNT_LABEL)
+			if err != nil {
+				return nil, err
+			}
+			if discountFloat < 0 || discountFloat > 1 {
 				discount = "0"
 			}
 
