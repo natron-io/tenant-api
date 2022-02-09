@@ -37,12 +37,6 @@ func init() {
 	util.InitLoggers()
 	util.Status = "Running"
 
-	// load util config envs
-	if err := util.LoadEnv(); err != nil {
-		util.ErrorLogger.Println("Error loading env variables")
-		os.Exit(1)
-	}
-
 	// creates the in-cluster config with ratelimiter to qps: 20 and burst: 50
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -56,6 +50,12 @@ func init() {
 	util.Clientset, err = kubernetes.NewForConfig(config)
 	if err != nil {
 		util.ErrorLogger.Printf("Error creating clientset: %v", err)
+		os.Exit(1)
+	}
+
+	// load util config envs
+	if err := util.LoadEnv(); err != nil {
+		util.ErrorLogger.Println("Error loading env variables")
 		os.Exit(1)
 	}
 }

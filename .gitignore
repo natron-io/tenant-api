@@ -6,4 +6,5 @@ docs/kubernetes/pvc.yaml
 docs/kubernetes/oingress.yaml
 docs/kubernetes/ns.yaml
 docs/kubernetes/ns-config.yaml
+docs/kubernetes/kubeconfig.yaml
 .DS_Store

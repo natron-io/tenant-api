@@ -89,7 +89,10 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 `CPU_COST` - Cost of a CPU in your currency *optional* (default: 1.00 for 1 CPU) \
 `MEMORY_COST` - Cost of a memory in your currency *optional* (default: 1.00 for 1 GB) \
 `STORAGE_COST_<storageclass name>` - Cost of your storage classes in your currency **required, multiple allowed** (default: 1.00 for 1 GB) \
-`INGRESS_COST` - Cost of ingress in your currency *optional* (default: 1.00 for 1 ingress)
+`INGRESS_COST` - Cost of ingress in your currency *optional* (default: 1.00 for 1 ingress) \
+`INGRESS_COST_PER_DOMAIN` - Calculates only ingress per domain.tld format *optional* (default: false) \
+`EXCLUDE_INGRESS_VCLUSTER` - Excludes the vcluster ingress resource to expose the vcluster Kubernetes API. Name of the ingress must contain the string "vcluster" *optional* (default: false)
+
 
 ### resource quotas
 It will get the resource quotas defined in the tenant namespace with the exact name of the tenant.

@@ -4,10 +4,8 @@ metadata:
   name: tenant-api
   labels:
     app: tenant-api
-    natron.io/tenant: netrics
-    natron.io/discount: "0.5"
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-natron
+      #natron.io/tenant: netrics
+      #    natron.io/discount: "0.5"
 spec:
   rules:
   - host: api.example.com
@@ -20,7 +18,54 @@ spec:
             name: tenant-api
             port:
               number: 8000
-  tls:
-  - hosts:
-    - api.example.com
-    secretName: api-natron-io-cert
+  - host: api2.example.com
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: tenant-api
+            port:
+              number: 8000
+  - host: api2.example2.com
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: tenant-api
+            port:
+              number: 8000
+  - host: api.example3.com
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: tenant-api
+            port:
+              number: 8000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vcluster
+  labels:
+    app: vcluster
+      #natron.io/tenant: netrics
+      #    natron.io/discount: "0.5"
+spec:
+  rules:
+  - host: tenant.natron.io
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: tenant-api
+            port:
+              number: 8000

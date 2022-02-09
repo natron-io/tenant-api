@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	Clientset      *kubernetes.Clientset
-	DISCOUNT_LABEL string
+	Clientset       *kubernetes.Clientset
+	DISCOUNT_LABEL  string
+	EXCLUDE_STRINGS []string
 )
 
 // GetPodsByTenant returns a map of pods for each tenant
@@ -27,7 +28,7 @@ func GetPodsByTenant(tenants []string) (map[string][]string, error) {
 		// for each pod add it to the list of pods for the namespace
 		tenantPods[tenant] = make([]string, 0)
 		for _, pod := range pods.Items {
-			tenantPods[tenant] = append(tenantPods[tenant], pod.Name)
+			tenantPods[tenant] = append(tenantPods[tenant], strings.Split(pod.Name, "-x-")[0])
 		}
 	}
 
@@ -157,8 +158,14 @@ func GetIngressRequestsSumByTenant(tenants []string) (map[string][]string, error
 
 			INGRESS_DISCOUNT_PERCENT = discountFloat
 
+			if strings.Contains(ingress.Name, "vcluster") && EXCLUDE_INGRESS_VCLUSTER {
+				continue
+			}
+
 			// apend ingress hostname to the list of ingress for the tenant
-			tenantsIngress[tenant] = append(tenantsIngress[tenant], ingress.Name)
+			for _, rule := range ingress.Spec.Rules {
+				tenantsIngress[tenant] = append(tenantsIngress[tenant], rule.Host)
+			}
 		}
 	}
 

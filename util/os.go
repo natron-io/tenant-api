@@ -83,6 +83,30 @@ func LoadEnv() error {
 		InfoLogger.Printf("MEMORY_COST set using env: %f", MEMORY_COST)
 	}
 
+	if INGRESS_COST, err = strconv.ParseFloat(os.Getenv("INGRESS_COST"), 64); INGRESS_COST == 0 || err != nil {
+		WarningLogger.Println("INGRESS_COST is not set or invalid float value")
+		INGRESS_COST = 1.00
+		InfoLogger.Printf("INGRESS_COST set using default: %f", INGRESS_COST)
+	} else {
+		InfoLogger.Printf("INGRESS_COST set to: %f", INGRESS_COST)
+	}
+
+	if INGRESS_COST_PER_DOMAIN, err = strconv.ParseBool(os.Getenv("INGRESS_COST_PER_DOMAIN")); !INGRESS_COST_PER_DOMAIN || err != nil {
+		WarningLogger.Println("INGRESS_COST_PER_DOMAIN is not set or invalid bool value")
+		INGRESS_COST_PER_DOMAIN = false
+		InfoLogger.Printf("INGRESS_COST_PER_DOMAIN set using default: %t", INGRESS_COST_PER_DOMAIN)
+	} else {
+		InfoLogger.Printf("INGRESS_COST_PER_DOMAIN set using env: %t", INGRESS_COST_PER_DOMAIN)
+	}
+
+	if EXCLUDE_INGRESS_VCLUSTER, err = strconv.ParseBool(os.Getenv("EXCLUDE_INGRESS_VCLUSTER")); !EXCLUDE_INGRESS_VCLUSTER || err != nil {
+		WarningLogger.Println("EXCLUDE_INGRESS_VCLUSTER is not set or invalid bool value")
+		EXCLUDE_INGRESS_VCLUSTER = false
+		InfoLogger.Printf("EXCLUDE_INGRESS_VCLUSTER set using default: %t", EXCLUDE_INGRESS_VCLUSTER)
+	} else {
+		InfoLogger.Printf("EXCLUDE_INGRESS_VCLUSTER set using env: %t", EXCLUDE_INGRESS_VCLUSTER)
+	}
+
 	if SLACK_TOKEN = os.Getenv("SLACK_TOKEN"); SLACK_TOKEN == "" {
 		WarningLogger.Println("SLACK_TOKEN is not set")
 		SLACK_TOKEN = ""
@@ -106,6 +130,9 @@ func LoadEnv() error {
 		InfoLogger.Printf("SLACK_URL set using env: %s", SlackURL)
 	}
 
+	// ======================== //
+	// 		StorageClasses		//
+	// ======================== //
 	// get every env variable starting with STORAGE_COST_ and parse it to STORAGE_COST with the storage class name after STORAGE_COST_ as key
 	tempStorageCost := make(map[string]map[string]float64)
 	for _, env := range os.Environ() {
@@ -129,20 +156,30 @@ func LoadEnv() error {
 	}
 	STORAGE_COST = tempStorageCost
 
+	storageClassesInCluster, err := GetStorageClassesInCluster()
+	if err != nil {
+		err = errors.New("cannot get storage classes in cluster")
+		ErrorLogger.Println(err)
+		Status = "Error: " + err.Error()
+		os.Exit(1)
+	}
+
+	// check if every storage class in cluster is in STORAGE_COST
+	for _, storageClass := range storageClassesInCluster {
+		if _, ok := STORAGE_COST[storageClass]; !ok {
+			err = errors.New("Storage class " + storageClass + " is not set")
+			ErrorLogger.Println(err)
+			Status = "Error: " + err.Error()
+			os.Exit(1)
+		}
+	}
+
 	if STORAGE_COST == nil {
 		WarningLogger.Println("STORAGE_COST is not set")
 		STORAGE_COST = map[string]map[string]float64{
 			"default": {"cost": 1.00},
 		}
 		InfoLogger.Printf("cost for storage class default set using default: %f", STORAGE_COST["default"]["cost"])
-	}
-
-	if INGRESS_COST, err = strconv.ParseFloat(os.Getenv("INGRESS_COST"), 64); INGRESS_COST == 0 || err != nil {
-		WarningLogger.Println("INGRESS_COST is not set or invalid float value")
-		INGRESS_COST = 1.00
-		InfoLogger.Printf("INGRESS_COST set using default: %f", INGRESS_COST)
-	} else {
-		InfoLogger.Printf("INGRESS_COST set to: %f", INGRESS_COST)
 	}
 
 	return nil
