@@ -159,7 +159,7 @@ func GetIngressCostSum(c *fiber.Ctx) error {
 	}
 
 	// create a map for each tenant with a added ingress requests
-	tenantIngressRequests, err := util.GetIngressRequestsSumByTenant(tenants)
+	tenantsIngressRequests, err := util.GetIngressRequestsSumByTenant(tenants)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"message": "Internal Server Error",
@@ -167,16 +167,32 @@ func GetIngressCostSum(c *fiber.Ctx) error {
 	}
 
 	// create a map for each tenant with a added ingress costs only if cost is not 0
-	tenantIngressCosts := make(map[string]float64)
+
+	if !util.INGRESS_COST_PER_DOMAIN {
+		tenantsIngressCosts := make(map[string]float64)
+		for _, tenant := range tenants {
+			if tenantsIngressRequests[tenant] != nil {
+				tenantsIngressCosts[tenant] = util.GetIngressCost(len(tenantsIngressRequests[tenant]))
+			}
+		}
+
+		if tenant == "" {
+			return c.JSON(tenantsIngressCosts)
+		} else {
+			return c.JSON(tenantsIngressCosts[tenant])
+		}
+	}
+
+	tenantsIngressCostsPerDomain := make(map[string]float64)
 	for _, tenant := range tenants {
-		if len(tenantIngressRequests[tenant]) != 0 {
-			tenantIngressCosts[tenant] = util.GetIngressCost(len(tenantIngressRequests[tenant]))
+		if tenantsIngressRequests[tenant] != nil {
+			tenantsIngressCostsPerDomain[tenant] = util.GetIngressCostByDomain(tenantsIngressRequests[tenant])
 		}
 	}
 
 	if tenant == "" {
-		return c.JSON(tenantIngressCosts)
+		return c.JSON(tenantsIngressCostsPerDomain)
 	} else {
-		return c.JSON(tenantIngressCosts[tenant])
+		return c.JSON(tenantsIngressCostsPerDomain[tenant])
 	}
 }

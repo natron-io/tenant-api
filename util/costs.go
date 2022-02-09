@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"strings"
 )
 
 var (
@@ -9,6 +10,8 @@ var (
 	MEMORY_COST              float64
 	STORAGE_COST             map[string]map[string]float64
 	INGRESS_COST             float64
+	INGRESS_COST_PER_DOMAIN  bool
+	EXCLUDE_INGRESS_VCLUSTER bool
 	CPU_DISCOUNT_PERCENT     float64
 	MEMORY_DISCOUNT_PERCENT  float64
 	STORAGE_DISCOUNT_PERCENT float64
@@ -38,6 +41,39 @@ func GetStorageCost(storageClass string, size float64) (float64, error) {
 }
 
 // GetIngressCost returns the cost of the provided Ingress
-func GetIngressCost(ingress int) float64 {
-	return (INGRESS_COST * float64(ingress)) * (1 - INGRESS_DISCOUNT_PERCENT)
+func GetIngressCostByDomain(hostnameStrings []string) float64 {
+
+	var tenantIngressCostsPerDomainSum float64
+
+	// define a set of domains
+	domains := make(map[string]bool)
+
+	for _, host := range hostnameStrings {
+		// split string with .
+		hostnameParts := strings.Split(host, ".")
+		// get the 2 last parts of the hostname
+		var domain string
+		if len(hostnameParts) > 1 {
+			domain = hostnameParts[len(hostnameParts)-2] + "." + hostnameParts[len(hostnameParts)-1]
+		} else {
+			domain = ""
+		}
+		// add the domain to the tenantIngressCosts map
+		if domain != "" {
+			domains[domain] = true
+		} else {
+			ErrorLogger.Printf("domain is not valid for hostname %s", host)
+		}
+	}
+
+	// calculate the cost * count of domains
+	for range domains {
+		tenantIngressCostsPerDomainSum += INGRESS_COST * (1 - INGRESS_DISCOUNT_PERCENT)
+	}
+
+	return tenantIngressCostsPerDomainSum
+}
+
+func GetIngressCost(ingressCount int) float64 {
+	return INGRESS_COST * float64(ingressCount) * (1 - INGRESS_DISCOUNT_PERCENT)
 }
