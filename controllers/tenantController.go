@@ -60,6 +60,37 @@ func GetPods(c *fiber.Ctx) error {
 	}
 }
 
+// GetPVCs returns a list of PVCs by authenticated users tenants
+func GetPVCs(c *fiber.Ctx) error {
+	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
+	tenant := c.Params("tenant")
+	tenants := CheckAuth(c)
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
+	if tenant != "" && !util.Contains(tenant, tenants) {
+		return c.Status(403).JSON(fiber.Map{
+			"message": "Forbidden",
+		})
+	}
+
+	// create a map for each tenant with a added memory requests
+	tenantPVCs, err := util.GetPVCsByTenant(tenants)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Internal Server Error",
+		})
+	}
+
+	if tenant == "" {
+		return c.JSON(tenantPVCs)
+	} else {
+		return c.JSON(tenantPVCs[tenant])
+	}
+}
+
 // GetCPURequestsSum returns the sum of all cpu requests by authenticated users tenants
 func GetCPURequestsSum(c *fiber.Ctx) error {
 
@@ -142,7 +173,7 @@ func GetStorageRequestsSum(c *fiber.Ctx) error {
 	}
 
 	// create a map for each tenant with a map of storage classes with calculated pvcs in it
-	tenantPVCs, err := util.GetStorageRequestsSumByTenant(tenants)
+	storageRequestsSum, err := util.GetStorageRequestsSumByTenant(tenants)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"message": "Internal Server Error",
@@ -150,14 +181,14 @@ func GetStorageRequestsSum(c *fiber.Ctx) error {
 	}
 
 	if tenant == "" {
-		return c.JSON(tenantPVCs)
+		return c.JSON(storageRequestsSum)
 	} else {
-		return c.JSON(tenantPVCs[tenant])
+		return c.JSON(storageRequestsSum[tenant])
 	}
 }
 
-// GetIngressRequestsSum returns the sum of all ingress requests by authenticated users tenants
-func GetIngressRequestsSum(c *fiber.Ctx) error {
+// GetIngresses returns the sum of all ingress requests by authenticated users tenants
+func GetIngresses(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
