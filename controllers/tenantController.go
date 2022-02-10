@@ -60,6 +60,7 @@ func GetPods(c *fiber.Ctx) error {
 	}
 }
 
+// GetPVCs returns a list of PVCs by authenticated users tenants
 func GetPVCs(c *fiber.Ctx) error {
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")
@@ -186,8 +187,8 @@ func GetStorageRequestsSum(c *fiber.Ctx) error {
 	}
 }
 
-// GetIngressRequestsSum returns the sum of all ingress requests by authenticated users tenants
-func GetIngressRequestsSum(c *fiber.Ctx) error {
+// GetIngresses returns the sum of all ingress requests by authenticated users tenants
+func GetIngresses(c *fiber.Ctx) error {
 
 	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
 	tenant := c.Params("tenant")

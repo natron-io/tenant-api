@@ -29,13 +29,13 @@ func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 	// Specific Tenant
 	v1.Get(":tenant/pods", controllers.GetPods)
 	v1.Get(":tenant/pvcs", controllers.GetPVCs)
+	v1.Get(":tenant/ingresses", controllers.GetIngresses)
 
 	// Specific Tenant
 	requests := v1.Group(":tenant/requests")
 	requests.Get("/cpu", controllers.GetCPURequestsSum)
 	requests.Get("/memory", controllers.GetMemoryRequestsSum)
 	requests.Get("/storage", controllers.GetStorageRequestsSum)
-	requests.Get("/ingress", controllers.GetIngressRequestsSum)
 
 	// Per tenant
 	costs := v1.Group(":tenant/costs")
