@@ -34,7 +34,8 @@ You can add `<tenant>` in front of the path to get the tenant specific data (of 
 `/api/v1/notifications` - Get the Slack notification messages of the broadcast channel provided via envs
 
 ##### general tenant resources
-`/api/v1/<tenant>/pods` - Get pods of a tenant 
+`/api/v1/<tenant>/pods` - Get a list of pods of a tenant \
+`/api/v1/<tenant>/pvcs` - Get a list of pvcs of a tenant
 
 ##### specific tenant resources
 `/api/v1/<tenant>/requests/cpu` - Get cpurequests in **Milicores** of a tenant \

@@ -35,6 +35,21 @@ func GetPodsByTenant(tenants []string) (map[string][]string, error) {
 	return tenantPods, nil
 }
 
+func GetPVCsByTenant(tenants []string) (map[string][]string, error) {
+	tenantPVCs := make(map[string][]string)
+	for _, tenant := range tenants {
+		pvcList, err := Clientset.CoreV1().PersistentVolumeClaims(tenant).List(context.TODO(), metav1.ListOptions{})
+		if err != nil && !strings.Contains(err.Error(), "not found") {
+			return nil, err
+		}
+
+		for _, pvc := range pvcList.Items {
+			tenantPVCs[tenant] = append(tenantPVCs[tenant], pvc.Name)
+		}
+	}
+	return tenantPVCs, nil
+}
+
 // GetCPURequestsSumByTenant returns the sum of CPU requests for each tenant
 func GetCPURequestsSumByTenant(tenants []string) (map[string]int64, error) {
 	tenantCPURequests := make(map[string]int64)
