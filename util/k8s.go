@@ -35,18 +35,30 @@ func GetPodsByTenant(tenants []string) (map[string][]string, error) {
 	return tenantPods, nil
 }
 
-func GetPVCsByTenant(tenants []string) (map[string][]string, error) {
-	tenantPVCs := make(map[string][]string)
-	for _, tenant := range tenants {
-		pvcList, err := Clientset.CoreV1().PersistentVolumeClaims(tenant).List(context.TODO(), metav1.ListOptions{})
-		if err != nil && !strings.Contains(err.Error(), "not found") {
-			return nil, err
-		}
+func GetPVCsByTenantByStorageClass(tenants []string) (map[string]map[string][]string, error) {
+	tenantPVCs := make(map[string]map[string][]string)
+	storageClasses, err := GetStorageClassesInCluster()
+	if err != nil {
+		return nil, err
+	}
 
-		for _, pvc := range pvcList.Items {
-			tenantPVCs[tenant] = append(tenantPVCs[tenant], pvc.Name)
+	for _, tenant := range tenants {
+		tenantPVCs[tenant] = make(map[string][]string)
+		for _, storageClass := range storageClasses {
+			// get pvc by storageclass pvc spec
+			pvcs, err := Clientset.CoreV1().PersistentVolumeClaims(tenant).List(context.TODO(), metav1.ListOptions{})
+			if err != nil && !strings.Contains(err.Error(), "not found") {
+				return nil, err
+			}
+
+			for _, pvc := range pvcs.Items {
+				if *pvc.Spec.StorageClassName == storageClass {
+					tenantPVCs[tenant][storageClass] = append(tenantPVCs[tenant][storageClass], pvc.Name)
+				}
+			}
 		}
 	}
+
 	return tenantPVCs, nil
 }
 

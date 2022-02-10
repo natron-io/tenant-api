@@ -77,7 +77,7 @@ func GetPVCs(c *fiber.Ctx) error {
 	}
 
 	// create a map for each tenant with a added memory requests
-	tenantPVCs, err := util.GetPVCsByTenant(tenants)
+	tenantPVCsByStorageClass, err := util.GetPVCsByTenantByStorageClass(tenants)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"message": "Internal Server Error",
@@ -85,9 +85,9 @@ func GetPVCs(c *fiber.Ctx) error {
 	}
 
 	if tenant == "" {
-		return c.JSON(tenantPVCs)
+		return c.JSON(tenantPVCsByStorageClass)
 	} else {
-		return c.JSON(tenantPVCs[tenant])
+		return c.JSON(tenantPVCsByStorageClass[tenant])
 	}
 }
 
