@@ -5,11 +5,14 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/natron-io/tenant-api/database"
 )
 
 var (
-	err  error
-	CORS string
+	err              error
+	CORS             string
+	COST_PERSISTENCY bool
 )
 
 // LoadEnv loads OS environment variables
@@ -158,7 +161,7 @@ func LoadEnv() error {
 
 	storageClassesInCluster, err := GetStorageClassesInCluster()
 	if err != nil {
-		err = errors.New("cannot get storage classes in cluster")
+		err = errors.New("cannot get storage classes in cluster " + err.Error())
 		ErrorLogger.Println(err)
 		Status = "Error: " + err.Error()
 		os.Exit(1)
@@ -180,6 +183,65 @@ func LoadEnv() error {
 			"default": {"cost": 1.00},
 		}
 		InfoLogger.Printf("cost for storage class default set using default: %f", STORAGE_COST["default"]["cost"])
+	}
+
+	// ============= //
+	//   Database    //
+	// ============= //
+	if COST_PERSISTENCY, err = strconv.ParseBool(os.Getenv("COST_PERSISTENCY")); !COST_PERSISTENCY || err != nil {
+		WarningLogger.Println("COST_PERSISTENCY is not set or invalid bool value")
+		COST_PERSISTENCY = false
+		InfoLogger.Printf("COST_PERSISTENCY set using default: %t", COST_PERSISTENCY)
+	} else {
+		InfoLogger.Printf("COST_PERSISTENCY set using env: %t", COST_PERSISTENCY)
+	}
+
+	if database.DB_HOST = os.Getenv("DB_HOST"); database.DB_HOST == "" {
+		WarningLogger.Println("DB_HOST is not set")
+		database.DB_HOST = "localhost"
+		InfoLogger.Printf("DB_HOST set using default: %s", database.DB_HOST)
+	} else {
+		InfoLogger.Printf("DB_HOST set using env: %s", database.DB_HOST)
+	}
+
+	if database.DB_PORT = os.Getenv("DB_PORT"); database.DB_PORT == "" {
+		WarningLogger.Println("DB_PORT is not set")
+		database.DB_PORT = "5432"
+		InfoLogger.Printf("DB_PORT set using default: %s", database.DB_PORT)
+	} else {
+		InfoLogger.Printf("DB_PORT set using env: %s", database.DB_PORT)
+	}
+
+	if database.DB_USER = os.Getenv("DB_USER"); database.DB_USER == "" {
+		WarningLogger.Println("DB_USER is not set")
+		database.DB_USER = "postgres"
+		InfoLogger.Printf("DB_USER set using default: %s", database.DB_USER)
+	} else {
+		InfoLogger.Printf("DB_USER set using env: %s", database.DB_USER)
+	}
+
+	if database.DB_PASSWORD = os.Getenv("DB_PASSWORD"); database.DB_PASSWORD == "" {
+		WarningLogger.Println("DB_PASSWORD is not set")
+		database.DB_PASSWORD = "postgres"
+		InfoLogger.Printf("DB_PASSWORD set using default: %s", database.DB_PASSWORD)
+	} else {
+		InfoLogger.Printf("DB_PASSWORD set using env: %s", database.DB_PASSWORD)
+	}
+
+	if database.DB_NAME = os.Getenv("DB_NAME"); database.DB_NAME == "" {
+		WarningLogger.Println("DB_NAME is not set")
+		database.DB_NAME = "postgres"
+		InfoLogger.Printf("DB_NAME set using default: %s", database.DB_NAME)
+	} else {
+		InfoLogger.Printf("DB_NAME set using env: %s", database.DB_NAME)
+	}
+
+	if database.DB_SSLMODE = os.Getenv("DB_SSLMODE"); database.DB_SSLMODE == "" {
+		WarningLogger.Println("DB_SSLMODE is not set")
+		database.DB_SSLMODE = "disable"
+		InfoLogger.Printf("DB_SSLMODE set using default: %s", database.DB_SSLMODE)
+	} else {
+		InfoLogger.Printf("DB_SSLMODE set using env: %s", database.DB_SSLMODE)
 	}
 
 	return nil

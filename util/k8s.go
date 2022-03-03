@@ -213,3 +213,18 @@ func GetStorageClassesInCluster() ([]string, error) {
 
 	return storageClasses, nil
 }
+
+func GetNamespaces() ([]string, error) {
+	namespaces := make([]string, 0)
+	namespaceList, err := Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
+
+	if err != nil && !strings.Contains(err.Error(), "not found") {
+		return nil, err
+	}
+
+	for _, namespace := range namespaceList.Items {
+		namespaces = append(namespaces, namespace.Name)
+	}
+
+	return namespaces, nil
+}

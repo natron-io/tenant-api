@@ -3,6 +3,9 @@ package util
 import (
 	"fmt"
 	"strings"
+
+	"github.com/natron-io/tenant-api/database"
+	"github.com/natron-io/tenant-api/models"
 )
 
 var (
@@ -74,6 +77,121 @@ func GetIngressCostByDomain(hostnameStrings []string) float64 {
 	return tenantIngressCostsPerDomainSum
 }
 
+// GetIngressCost returns the cost of the provided Ingress
 func GetIngressCost(ingressCount int) float64 {
 	return INGRESS_COST * float64(ingressCount) * (1 - INGRESS_DISCOUNT_PERCENT)
+}
+
+// SaveCostsDB saves all the costs of a tenant in the database
+func SaveCostsToDB() error {
+	var err error
+	var tenants []models.Tenant
+	var cpuCost models.CPUCost
+	var memoryCost models.MemoryCost
+	var ingressCost models.IngressCost
+
+	db := database.DBConn
+
+	// get all namespaces in the kubernetes cluster
+	namespaces, err := GetNamespaces()
+	if err != nil {
+		return err
+	}
+
+	for _, namespace := range namespaces {
+		tenant := models.Tenant{
+			GitHubTeamSlug: namespace,
+		}
+
+		tenants = append(tenants, tenant)
+
+	}
+	tenantCPURequests, err := GetCPURequestsSumByTenant(namespaces)
+	if err != nil {
+		return err
+	}
+
+	tenantMemoryRequests, err := GetMemoryRequestsSumByTenant(namespaces)
+	if err != nil {
+		return err
+	}
+
+	tenantPVCs, err := GetStorageRequestsSumByTenant(namespaces)
+	if err != nil {
+		return err
+	}
+
+	tenantsIngressRequests, err := GetIngressRequestsSumByTenant(namespaces)
+	if err != nil {
+		return err
+	}
+
+	for _, tenant := range tenants {
+		cpuCost = models.CPUCost{
+			TenantId: tenant.Id,
+			Value:    GetCPUCost(float64(tenantCPURequests[tenant.GitHubTeamSlug])),
+		}
+
+		err = db.Create(&cpuCost).Error
+		if err != nil {
+			return err
+		}
+		InfoLogger.Printf("CPU cost for tenant %s: %f", tenant.GitHubTeamSlug, cpuCost.Value)
+
+		memoryCost = models.MemoryCost{
+			TenantId: tenant.Id,
+			Value:    GetMemoryCost(float64(tenantMemoryRequests[tenant.GitHubTeamSlug])),
+		}
+
+		err = db.Create(&memoryCost).Error
+		if err != nil {
+			return err
+		}
+		InfoLogger.Printf("Memory cost for tenant %s: %f", tenant.GitHubTeamSlug, memoryCost.Value)
+
+		for storageClass, pvc := range tenantPVCs[tenant.GitHubTeamSlug] {
+			storageClassCost, err := GetStorageCost(storageClass, float64(pvc))
+			if err != nil {
+				return err
+			}
+			storageCost := models.StorageCost{
+				TenantId:     tenant.Id,
+				StorageClass: storageClass,
+				Value:        storageClassCost,
+			}
+
+			err = db.Create(&storageCost).Error
+			if err != nil {
+				return err
+			}
+			InfoLogger.Printf("Storage cost for tenant %s: %f %s", tenant.GitHubTeamSlug, storageCost.Value, storageClass)
+		}
+
+		if !INGRESS_COST_PER_DOMAIN {
+			ingressCost = models.IngressCost{
+				TenantId: tenant.Id,
+				Value:    GetIngressCost(len(tenantsIngressRequests[tenant.GitHubTeamSlug])),
+			}
+
+			err = db.Create(&ingressCost).Error
+			if err != nil {
+				return err
+			}
+			InfoLogger.Printf("Ingress cost for tenant %s: %f", tenant.GitHubTeamSlug, ingressCost.Value)
+		} else {
+			ingressCost = models.IngressCost{
+				TenantId: tenant.Id,
+				Value:    GetIngressCostByDomain(tenantsIngressRequests[tenant.GitHubTeamSlug]),
+			}
+
+			err = db.Create(&ingressCost).Error
+			if err != nil {
+				return err
+			}
+			InfoLogger.Printf("Ingress cost for tenant %s: %f", tenant.GitHubTeamSlug, ingressCost.Value)
+		}
+
+	}
+
+	return nil
 }

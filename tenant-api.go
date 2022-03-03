@@ -24,6 +24,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/template/html"
+	"github.com/natron-io/tenant-api/database"
 	"github.com/natron-io/tenant-api/routes"
 	"github.com/natron-io/tenant-api/util"
 	"github.com/slack-go/slack"
@@ -57,6 +58,27 @@ func init() {
 	if err := util.LoadEnv(); err != nil {
 		util.ErrorLogger.Println("Error loading env variables")
 		os.Exit(1)
+	}
+
+	if util.COST_PERSISTENCY {
+		if err := database.InitDB(); err != nil {
+			util.ErrorLogger.Println("Error initializing database")
+			os.Exit(1)
+		}
+		util.InfoLogger.Println("Database is connected")
+
+		go func() {
+			for {
+				time.Sleep(time.Minute)
+				util.InfoLogger.Println("Saving costs...")
+				err := util.SaveCostsToDB()
+				if err != nil {
+					util.ErrorLogger.Println("Error saving costs:", err)
+				} else {
+					util.InfoLogger.Println("Costs saved")
+				}
+			}
+		}()
 	}
 }
 

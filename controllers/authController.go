@@ -2,13 +2,17 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
+	"github.com/natron-io/tenant-api/database"
+	"github.com/natron-io/tenant-api/models"
 	"github.com/natron-io/tenant-api/util"
+	"gorm.io/gorm"
 )
 
 // GetGithubTeams returns the redirect url
@@ -105,6 +109,25 @@ func LoggedIn(c *fiber.Ctx, githubData string) error {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ := token.SignedString([]byte(util.SECRET_KEY))
+
+	// check if tenants exists in database and create if not
+	for _, githubTeamSlug := range githubTeamSlugs {
+		if err := database.DBConn.Where("github_team_slug = ?", githubTeamSlug).First(&models.Tenant{}).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				// create tenant
+				tenant := models.Tenant{
+					GitHubTeamSlug: githubTeamSlug,
+				}
+				database.DBConn.Create(&tenant)
+				util.InfoLogger.Printf("Created tenant in database '%s'", githubTeamSlug)
+			} else {
+				// return internal server error
+				return c.Status(500).JSON(fiber.Map{
+					"message": "Internal server error",
+				})
+			}
+		}
+	}
 
 	return c.JSON(fiber.Map{
 		"token": tokenString,
