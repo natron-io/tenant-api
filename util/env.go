@@ -10,9 +10,11 @@ import (
 )
 
 var (
-	err              error
-	CORS             string
-	COST_PERSISTENCY bool
+	err                       error
+	CORS                      string
+	COST_PERSISTENCY          bool
+	COST_PERSISTENCY_INTERVAL int
+	DEBUG                     bool
 )
 
 // LoadEnv loads OS environment variables
@@ -196,6 +198,14 @@ func LoadEnv() error {
 		InfoLogger.Printf("COST_PERSISTENCY set using env: %t", COST_PERSISTENCY)
 	}
 
+	if COST_PERSISTENCY_INTERVAL, err = strconv.Atoi(os.Getenv("COST_PERSISTENCY_INTERVAL")); COST_PERSISTENCY_INTERVAL == 0 || err != nil {
+		WarningLogger.Println("COST_PERSISTENCY_INTERVAL is not set or invalid int value")
+		COST_PERSISTENCY_INTERVAL = 3600
+		InfoLogger.Printf("COST_PERSISTENCY_INTERVAL set using default (1h): %d", COST_PERSISTENCY_INTERVAL)
+	} else {
+		InfoLogger.Printf("COST_PERSISTENCY_INTERVAL set using env: %d", COST_PERSISTENCY_INTERVAL)
+	}
+
 	if database.DB_HOST = os.Getenv("DB_HOST"); database.DB_HOST == "" {
 		WarningLogger.Println("DB_HOST is not set")
 		database.DB_HOST = "localhost"
@@ -242,6 +252,13 @@ func LoadEnv() error {
 		InfoLogger.Printf("DB_SSLMODE set using default: %s", database.DB_SSLMODE)
 	} else {
 		InfoLogger.Printf("DB_SSLMODE set using env: %s", database.DB_SSLMODE)
+	}
+
+	if DEBUG, err = strconv.ParseBool(os.Getenv("DEBUG")); DEBUG || err != nil {
+		InfoLogger.Printf("DEBUG set using env: %t", DEBUG)
+	} else {
+		InfoLogger.Printf("DEBUG set using default: %t", DEBUG)
+		DEBUG = false
 	}
 
 	return nil

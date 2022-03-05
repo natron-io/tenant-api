@@ -1,5 +1,5 @@
 /*
-Copyright 2022 Jan Lauber
+Copyright 2022 Netrics AG
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

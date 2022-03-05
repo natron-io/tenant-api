@@ -28,11 +28,17 @@ func InitDB() error {
 	}
 
 	// Migrate the schema
-	DBConn.AutoMigrate(&models.Tenant{})
-	DBConn.AutoMigrate(&models.CPUCost{})
-	DBConn.AutoMigrate(&models.MemoryCost{})
-	DBConn.AutoMigrate(&models.IngressCost{})
-	DBConn.AutoMigrate(&models.StorageCost{})
+	err = DBConn.AutoMigrate(
+		&models.Tenant{},
+		&models.CPUCost{},
+		&models.MemoryCost{},
+		&models.StorageCost{},
+		&models.IngressCost{},
+		&models.MonthlyCost{},
+	)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

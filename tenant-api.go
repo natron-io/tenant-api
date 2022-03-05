@@ -1,5 +1,5 @@
 /*
-Copyright 2022 Jan Lauber
+Copyright 2022 Netrics AG
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -66,25 +66,49 @@ func init() {
 			os.Exit(1)
 		}
 		util.InfoLogger.Println("Database is connected")
+		restartCounter := 1
 
 		go func() {
 			for {
-				time.Sleep(time.Minute)
+				time.Sleep(time.Duration(util.COST_PERSISTENCY_INTERVAL) * time.Second)
 				util.InfoLogger.Println("Saving costs...")
 				err := util.SaveCostsToDB()
 				if err != nil {
 					util.ErrorLogger.Println("Error saving costs:", err)
+					if restartCounter <= 5 {
+						util.InfoLogger.Printf("Restarting database %d time(s)", restartCounter)
+						database.InitDB()
+						restartCounter++
+					} else {
+						util.ErrorLogger.Println("Shutting down application")
+						os.Exit(1)
+					}
 				} else {
 					util.InfoLogger.Println("Costs saved")
 				}
 			}
 		}()
+
+		go func() {
+			for {
+				// if last day of current month is reached, create monthly report cost
+				if time.Now().Day() == 5 {
+					util.InfoLogger.Println("Creating monthly report cost")
+					err := util.CreateMonthlyCostReport()
+					if err != nil {
+						util.ErrorLogger.Println("Error creating monthly report cost:", err)
+					}
+				}
+				time.Sleep(time.Hour * 24)
+			}
+		}()
+
 	}
 }
 
 func main() {
 
-	engine := html.New("./views", ".html")
+	engine := html.New("./web/views", ".html")
 
 	if util.SLACK_TOKEN != "" {
 		util.SlackClient = slack.New(util.SLACK_TOKEN)
@@ -108,8 +132,8 @@ func main() {
 		},
 	}))
 
-	app.Static("/styles", "./static/styles")
-	app.Static("/images", "./static/images")
+	app.Static("/styles", "./web/static/styles")
+	app.Static("/images", "./web/static/images")
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		// set header to html

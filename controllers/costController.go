@@ -2,7 +2,10 @@ package controllers
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/natron-io/tenant-api/database"
+	"github.com/natron-io/tenant-api/models"
 	"github.com/natron-io/tenant-api/util"
+	"gorm.io/gorm"
 )
 
 // GetCPUCostSum returns the cpu cost sum per tenant
@@ -195,4 +198,91 @@ func GetIngressCostSum(c *fiber.Ctx) error {
 	} else {
 		return c.JSON(tenantsIngressCostsPerDomain[tenant])
 	}
+}
+
+func GetMonthlyCostSum(c *fiber.Ctx) error {
+
+	util.InfoLogger.Printf("%s %s %s", c.IP(), c.Method(), c.Path())
+	tenant := c.Params("tenant")
+	tenants := CheckAuth(c)
+	if len(tenants) == 0 {
+		return c.Status(401).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
+	if tenant != "" && !util.Contains(tenant, tenants) {
+		return c.Status(403).JSON(fiber.Map{
+			"message": "Forbidden",
+		})
+	}
+
+	db := database.DBConn
+
+	// search tenants in database GitHubTeamSlug
+	dbTenant := models.Tenant{
+		GitHubTeamSlug: tenant,
+	}
+
+	err := db.Where(&dbTenant).First(&dbTenant).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(404).JSON(fiber.Map{
+				"message": "Not Found",
+			})
+		}
+		util.ErrorLogger.Printf("%s", err)
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Internal Server Error",
+		})
+	}
+
+	// get cpuCosts by month and tenant
+	cpuCosts, err := util.GetCPUCostsByMonthAndTenant(dbTenant)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Internal Server Error",
+		})
+	}
+
+	// get memoryCosts by month and tenant
+	memoryCosts, err := util.GetMemoryCostsByMonthAndTenant(dbTenant)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Internal Server Error",
+		})
+	}
+
+	// get storageCosts by month and tenant
+	storageCosts, err := util.GetStorageCostsByMonthAndTenant(dbTenant)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Internal Server Error",
+		})
+	}
+
+	var storageClassCostSum map[string]float64
+	for _, storageClass := range storageCosts {
+		if storageClassCostSum == nil {
+			storageClassCostSum = make(map[string]float64)
+		}
+		storageClassCostSum[storageClass.StorageClass] = storageClassCostSum[storageClass.StorageClass] + storageClass.Value
+	}
+
+	ingressCosts, err := util.GetIngressCostsByMonthAndTenant(dbTenant)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Internal Server Error",
+		})
+	}
+
+	// create JSON object for each cost
+	costsJSON := make(map[string]float64)
+	costsJSON["cpu"] = cpuCosts.Value
+	costsJSON["memory"] = memoryCosts.Value
+	for storageClass, value := range storageClassCostSum {
+		costsJSON[storageClass] = value
+	}
+	costsJSON["ingress"] = ingressCosts.Value
+
+	return c.JSON(costsJSON)
 }

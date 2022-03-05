@@ -9,7 +9,6 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=build /go/src/github.com/natron-io/tenant-api/tenant-api ./
-COPY --from=build /go/src/github.com/natron-io/tenant-api/views ./views
-COPY --from=build /go/src/github.com/natron-io/tenant-api/static ./static
+COPY --from=build /go/src/github.com/natron-io/tenant-api/web ./web
 EXPOSE 8000
 CMD ["./tenant-api"]
