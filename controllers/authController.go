@@ -116,6 +116,10 @@ func CheckAuth(c *fiber.Ctx) []string {
 	var token *jwt.Token
 	var tokenString string
 
+	if util.DEBUG {
+		return []string{"debug"}
+	}
+
 	// get bearer token from header
 	bearerToken := c.Get("Authorization")
 

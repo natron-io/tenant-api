@@ -7,5 +7,9 @@ func Contains(tenant string, tenants []string) bool {
 			return true
 		}
 	}
+	if DEBUG {
+		InfoLogger.Printf("tenant %s is not in the list of tenants %v", tenant, tenants)
+		return true
+	}
 	return false
 }

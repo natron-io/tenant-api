@@ -14,5 +14,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package routes sets up the routes for the http handlers
-package routes
+// Package controllers is responsible to set up the controllers for the http handlers
+package models

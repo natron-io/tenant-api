@@ -189,14 +189,25 @@ func GetIngressRequestsSumByTenant(tenants []string) (map[string][]string, error
 				continue
 			}
 
-			// apend ingress hostname to the list of ingress for the tenant
+			// apend ingress hostname to the list of ingress for the tenant if it doesn't already exist
 			for _, rule := range ingress.Spec.Rules {
-				tenantsIngress[tenant] = append(tenantsIngress[tenant], rule.Host)
+				if !contains(tenantsIngress[tenant], rule.Host) {
+					tenantsIngress[tenant] = append(tenantsIngress[tenant], rule.Host)
+				}
 			}
 		}
 	}
 
 	return tenantsIngress, nil
+}
+
+func contains(s1 []string, s2 string) bool {
+	for _, v := range s1 {
+		if v == s2 {
+			return true
+		}
+	}
+	return false
 }
 
 func GetStorageClassesInCluster() ([]string, error) {
@@ -212,4 +223,19 @@ func GetStorageClassesInCluster() ([]string, error) {
 	}
 
 	return storageClasses, nil
+}
+
+func GetNamespaces() ([]string, error) {
+	namespaces := make([]string, 0)
+	namespaceList, err := Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
+
+	if err != nil && !strings.Contains(err.Error(), "not found") {
+		return nil, err
+	}
+
+	for _, namespace := range namespaceList.Items {
+		namespaces = append(namespaces, namespace.Name)
+	}
+
+	return namespaces, nil
 }

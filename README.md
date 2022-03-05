@@ -21,7 +21,7 @@ You can also sync your slack broadcast channel to present some important informa
 
 ## api
 
-#### `GET`
+### `GET`
 > **important:** for authenticated access you need to provide the `Authorization` header with the `Bearer` token.
 
 You can add `<tenant>` in front of the path to get the tenant specific data (of everything). 
@@ -47,7 +47,8 @@ You can add `<tenant>` in front of the path to get the tenant specific data (of 
 `/api/v1/<tenant>/costs/cpu` - Get the CPU costs by CPU \
 `/api/v1/<tenant>/costs/memory` - Get the memory costs by Memory \
 `/api/v1/<tenant>/costs/storage` - Get the storage costs by StorageClass \
-`/api/v1/<tenant>/costs/ingress` - Get the ingress costs by tenant
+`/api/v1/<tenant>/costs/ingress` - Get the ingress costs by tenant \
+`/api/v1/<tenant>/costs/currentmonth` - Get a list of the average cost consumption for the current month
 
 ##### tenant resource quotas
 `/api/v1/<tenant>/quotas/cpu` - Get the CPU resource Quota by the label defined via env \
@@ -55,7 +56,7 @@ You can add `<tenant>` in front of the path to get the tenant specific data (of 
 `/api/v1/<tenant>/quotas/storage` - Get the storage resource Quota for each storage class by the label**s** defined via env 
 
 
-#### `POST`
+### `POST`
 
 ##### auth
 You can send the github code with json body `{"github_code": "..."}` to the `/login/github` endpoint.
@@ -65,6 +66,7 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 
 ### general
 `CORS` - CORS middleware for Fiber that that can be used to enable Cross-Origin Resource Sharing with various options. (e.g. "https://example.com, https://example2.com")
+`DEBUG` - Disables API authentication / authorization (tenants doesn't work anymore, bc jwt won't get validated and parsed)
 
 ### GitHub
 > There are two ways for authenticating with GitHub. You can authenticate without a dashboard, so the github callback url is not the same as the dashboard.
@@ -94,6 +96,15 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 `INGRESS_COST_PER_DOMAIN` - Calculates only ingress per domain.tld format *optional* (default: false) \
 `EXCLUDE_INGRESS_VCLUSTER` - Excludes the vcluster ingress resource to expose the vcluster Kubernetes API. Name of the ingress must contain the string "vcluster" *optional* (default: false)
 
+#### cost persistency
+`COST_PERSISTENCY` - if set to true, database persistency configuration must be set *optional* (default: false) \
+`COST_PERSISTENCY_INTERVAL` - interval in seconds to log cost data into database *optional* (default: 3600) \
+`DB_HOST` - postgresql db host *optional* (default: localhost) \
+`DB_PORT` - postgresql db port *optional* (default: 5432) \
+`DB_USER` - postgresql db user *optional* (default: postgres) \
+`DB_PASSWORD` - postgresql db password *optional* (default: postgres) \
+`DB_NAME` - postgresql db name *optional* (default: postgres) \
+`DB_SSLMODE` - postgresql sslmode *optional* (default: postgres)
 
 ### resource quotas
 It will get the resource quotas defined in the tenant namespace with the exact name of the tenant.

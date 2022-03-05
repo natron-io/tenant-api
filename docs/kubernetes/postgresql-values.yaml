@@ -1,0 +1,5 @@
+# Test Helm Values
+global:
+  postgresql:
+    auth:
+      postgresPassword: "12345678"

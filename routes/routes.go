@@ -43,6 +43,7 @@ func Setup(app *fiber.App, clientset *kubernetes.Clientset) {
 	costs.Get("/memory", controllers.GetMemoryCostSum)
 	costs.Get("/storage", controllers.GetStorageCostSum)
 	costs.Get("/ingress", controllers.GetIngressCostSum)
+	costs.Get("/monthly", controllers.GetMonthlyCostSum)
 
 	// Quotas
 	quotas := v1.Group(":tenant/quotas")
