@@ -77,7 +77,10 @@ func init() {
 					util.ErrorLogger.Println("Error saving costs:", err)
 					if restartCounter <= 5 {
 						util.InfoLogger.Printf("Restarting database %d time(s)", restartCounter)
-						database.InitDB()
+						err := database.InitDB()
+						if err != nil {
+							util.ErrorLogger.Println("Error restarting database")
+						}
 						restartCounter++
 					} else {
 						util.ErrorLogger.Println("Shutting down application")
