@@ -97,13 +97,13 @@ You can send the github code with json body `{"github_code": "..."}` to the `/lo
 `EXCLUDE_INGRESS_VCLUSTER` - Excludes the vcluster ingress resource to expose the vcluster Kubernetes API. Name of the ingress must contain the string "vcluster" *optional* (default: false)
 
 #### cost persistency
-`COST_PERSISTENCY` - if set to true, database persistency configuration must be set *optional* (default: false)
-`COST_PERSISTENCY_INTERVAL` - interval in seconds to log cost data into database *optional* (default: 3600)
-`DB_HOST` - postgresql db host *optional* (default: localhost)
-`DB_PORT` - postgresql db port *optional* (default: 5432)
-`DB_USER` - postgresql db user *optional* (default: postgres)
-`DB_PASSWORD` - postgresql db password *optional* (default: postgres)
-`DB_NAME` - postgresql db name *optional* (default: postgres)
+`COST_PERSISTENCY` - if set to true, database persistency configuration must be set *optional* (default: false) \
+`COST_PERSISTENCY_INTERVAL` - interval in seconds to log cost data into database *optional* (default: 3600) \
+`DB_HOST` - postgresql db host *optional* (default: localhost) \
+`DB_PORT` - postgresql db port *optional* (default: 5432) \
+`DB_USER` - postgresql db user *optional* (default: postgres) \
+`DB_PASSWORD` - postgresql db password *optional* (default: postgres) \
+`DB_NAME` - postgresql db name *optional* (default: postgres) \
 `DB_SSLMODE` - postgresql sslmode *optional* (default: postgres)
 
 ### resource quotas
