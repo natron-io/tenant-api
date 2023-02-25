@@ -2,7 +2,11 @@ module github.com/natron-io/tenant-api
 
 go 1.17
 
-require k8s.io/apimachinery v0.23.1
+require (
+	github.com/slack-go/slack v0.10.1
+	k8s.io/api v0.23.1
+	k8s.io/apimachinery v0.23.1
+)
 
 require (
 	github.com/andybalholm/brotli v1.0.2 // indirect
@@ -12,18 +16,16 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/klauspost/compress v1.13.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/slack-go/slack v0.10.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.31.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
-	golang.org/x/sys v0.0.0-20210831042530-f4d43177bf5e // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
-	k8s.io/api v0.23.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20211115234752-e816edb12b65 // indirect
 	sigs.k8s.io/yaml v1.2.0 // indirect
 )
